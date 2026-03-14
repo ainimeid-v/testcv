@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV Generator — Buat CV Profesional</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ═══════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════ -->
+  <aside class="sidebar">
+
+    <div class="logo">
+      <div class="logo-mark">📄</div>
+      <div>
+        <div class="logo-text">CV Generator</div>
+        <div class="logo-badge">free · no API key</div>
+      </div>
+    </div>
+
+    <div>
+      <p class="nav-label">Langkah</p>
+      <nav class="steps">
+        <button class="step-btn active" data-step="1" onclick="goToStep(1)">
+          <span class="s-num">1</span>
+          <span class="s-info">
+            <span class="s-title">Identitas</span>
+            <span class="s-sub">Foto & info pribadi</span>
+          </span>
+          <span class="s-check">✓</span>
+        </button>
+        <button class="step-btn" data-step="2" onclick="goToStep(2)">
+          <span class="s-num">2</span>
+          <span class="s-info">
+            <span class="s-title">Pendidikan</span>
+            <span class="s-sub">Riwayat sekolah / kampus</span>
+          </span>
+          <span class="s-check">✓</span>
+        </button>
+        <button class="step-btn" data-step="3" onclick="goToStep(3)">
+          <span class="s-num">3</span>
+          <span class="s-info">
+            <span class="s-title">Pengalaman</span>
+            <span class="s-sub">Kerja, magang, organisasi</span>
+          </span>
+          <span class="s-check">✓</span>
+        </button>
+        <button class="step-btn" data-step="4" onclick="goToStep(4)">
+          <span class="s-num">4</span>
+          <span class="s-info">
+            <span class="s-title">Skills & Sertifikat</span>
+            <span class="s-sub">Kemampuan & lisensi</span>
+          </span>
+          <span class="s-check">✓</span>
+        </button>
+        <button class="step-btn" data-step="5" onclick="goToStep(5)">
+          <span class="s-num">5</span>
+          <span class="s-info">
+            <span class="s-title">Preview & Unduh</span>
+            <span class="s-sub">Cek & download PDF</span>
+          </span>
+          <span class="s-check">✓</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span>Progress</span>
+        <span id="progress-pct">20%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ═══════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════ -->
+  <main class="main">
+
+    <!-- ╔══════════════════════════╗
+         ║  STEP 1 — IDENTITAS     ║
+         ╚══════════════════════════╝ -->
+    <section class="step-page active" id="step-1">
+      <p class="page-eyebrow">Langkah 01 / 05</p>
+      <h1 class="page-title">Data Identitas</h1>
+      <p class="page-desc">Upload foto profil dan isi informasi personal kamu.</p>
+
+      <!-- Photo Upload -->
+      <div class="photo-row">
+        <div class="photo-drop" id="photo-drop" onclick="triggerPhotoInput()">
+          <div class="drop-icon">📷</div>
+          <div class="drop-label">Klik untuk<br>upload foto</div>
+        </div>
+        <input type="file" id="photo-file" accept="image/jpeg,image/png,image/webp" style="display:none" onchange="handlePhotoUpload(event)" />
+        <div class="photo-meta">
+          <h4>Foto Profil</h4>
+          <p>Upload foto formal terbaru kamu. Foto akan tampil di CV dan PDF hasil download.</p>
+          <div class="photo-tips">
+            <span>Format JPG / PNG / WebP</span>
+            <span>Ukuran maks 5MB</span>
+            <span>Latar belakang polos lebih bagus</span>
+            <span>Foto tegak / portrait</span>
+          </div>
+          <div class="photo-name" id="photo-name"></div>
+        </div>
+      </div>
+
+      <!-- Jurusan Picker -->
+      <div class="form-group" style="margin-bottom:28px">
+        <label class="form-label">Pilih Jurusan / Bidang <span class="req">*</span></label>
+        <div class="jurusan-picker">
+          <div class="jurusan-search-bar">
+            <span class="jurusan-search-icon">🔍</span>
+            <input
+              class="jurusan-search-input"
+              id="jurusan-search"
+              placeholder="Cari jurusan... (cth: Teknik, Hukum, Desain)"
+              oninput="filterJurusan(this.value)"
+              autocomplete="off"
+            />
+            <span class="jurusan-selected-badge" id="jurusan-badge"></span>
+          </div>
+          <div class="jurusan-scroll" id="jurusan-scroll">
+            <!-- Built by app.js -->
+          </div>
+          <div class="jurusan-empty" id="jurusan-empty">
+            Jurusan tidak ditemukan 🤔 — coba kata kunci lain
+          </div>
+        </div>
+      </div>
+
+      <!-- Personal Info -->
+      <div class="form-grid">
+        <div class="form-group span2">
+          <label class="form-label">Nama Lengkap <span class="req">*</span></label>
+          <input class="form-input" id="nama" placeholder="Contoh: Budi Santoso, S.Kom." autocomplete="name" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Posisi / Jabatan yang Dilamar <span class="req">*</span></label>
+          <input class="form-input" id="posisi" placeholder="Contoh: Frontend Developer" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tempat, Tanggal Lahir</label>
+          <input class="form-input" id="ttl" placeholder="Jakarta, 01 Januari 2000" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email <span class="req">*</span></label>
+          <input class="form-input" id="email" type="email" placeholder="nama@email.com" autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">No. HP / WhatsApp</label>
+          <input class="form-input" id="phone" type="tel" placeholder="+62 812 3456 7890" autocomplete="tel" />
+        </div>
+
+        <div class="form-group span2">
+          <label class="form-label">Alamat</label>
+          <input class="form-input" id="alamat" placeholder="Kota, Provinsi (cth: Jakarta Selatan, DKI Jakarta)" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">LinkedIn</label>
+          <input class="form-input" id="linkedin" placeholder="linkedin.com/in/username" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Website / Portfolio / GitHub</label>
+          <input class="form-input" id="website" placeholder="github.com/username" />
+        </div>
+
+        <div class="form-group span2">
+          <label class="form-label">Ringkasan Profil</label>
+          <textarea class="form-textarea" id="ringkasan"
+            placeholder="Deskripsikan dirimu secara singkat — keahlian utama, pengalaman, dan tujuan karir (3–4 kalimat singkat)..."></textarea>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <div></div>
+        <button class="btn btn-primary" onclick="nextStep()">Lanjut → Pendidikan</button>
+      </div>
+    </section>
+
+
+    <!-- ╔══════════════════════════╗
+         ║  STEP 2 — PENDIDIKAN    ║
+         ╚══════════════════════════╝ -->
+    <section class="step-page" id="step-2">
+      <p class="page-eyebrow">Langkah 02 / 05</p>
+      <h1 class="page-title">Riwayat Pendidikan</h1>
+      <p class="page-desc">Tambahkan dari yang paling baru. Klik tombol di bawah untuk entri baru.</p>
+
+      <div class="card-list" id="edu-list"></div>
+      <button class="btn-add-card" onclick="addEdu()">＋ Tambah Pendidikan</button>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prevStep()">← Kembali</button>
+        <button class="btn btn-primary" onclick="nextStep()">Lanjut → Pengalaman</button>
+      </div>
+    </section>
+
+
+    <!-- ╔══════════════════════════╗
+         ║  STEP 3 — PENGALAMAN    ║
+         ╚══════════════════════════╝ -->
+    <section class="step-page" id="step-3">
+      <p class="page-eyebrow">Langkah 03 / 05</p>
+      <h1 class="page-title">Pengalaman Kerja</h1>
+      <p class="page-desc">Masukkan pengalaman kerja, magang, freelance, atau organisasi. Dari yang terbaru.</p>
+
+      <div class="card-list" id="exp-list"></div>
+      <button class="btn-add-card" onclick="addExp()">＋ Tambah Pengalaman</button>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prevStep()">← Kembali</button>
+        <button class="btn btn-primary" onclick="nextStep()">Lanjut → Skills</button>
+      </div>
+    </section>
+
+
+    <!-- ╔════════════════════════════════╗
+         ║  STEP 4 — SKILLS & SERTIFIKAT ║
+         ╚════════════════════════════════╝ -->
+    <section class="step-page" id="step-4">
+      <p class="page-eyebrow">Langkah 04 / 05</p>
+      <h1 class="page-title">Skills & Sertifikat</h1>
+      <p class="page-desc">Ketik skill lalu tekan Enter atau klik +. Tambahkan sertifikat di bawah.</p>
+
+      <div class="form-grid">
+
+        <!-- Hard Skills -->
+        <div class="form-group span2">
+          <label class="form-label">Hard Skills (Teknis)</label>
+          <div class="chips-wrap" id="hard-chips"></div>
+          <div class="skill-row">
+            <input class="form-input" id="hard-input"
+              placeholder="Cth: JavaScript, AutoCAD, Microsoft Excel..."
+              onkeydown="if(event.key==='Enter'){addSkill('hard');event.preventDefault()}" />
+            <button class="btn-skill-add" onclick="addSkill('hard')">+</button>
+          </div>
+        </div>
+
+        <!-- Soft Skills -->
+        <div class="form-group span2">
+          <label class="form-label">Soft Skills</label>
+          <div class="chips-wrap" id="soft-chips"></div>
+          <div class="skill-row">
+            <input class="form-input" id="soft-input"
+              placeholder="Cth: Leadership, Teamwork, Problem Solving..."
+              onkeydown="if(event.key==='Enter'){addSkill('soft');event.preventDefault()}" />
+            <button class="btn-skill-add" onclick="addSkill('soft')">+</button>
+          </div>
+        </div>
+
+        <!-- Bahasa -->
+        <div class="form-group">
+          <label class="form-label">Kemampuan Bahasa</label>
+          <div class="chips-wrap" id="lang-chips"></div>
+          <div class="skill-row">
+            <input class="form-input" id="lang-input"
+              placeholder="Cth: Inggris (Fluent), Mandarin (Basic)"
+              onkeydown="if(event.key==='Enter'){addSkill('lang');event.preventDefault()}" />
+            <button class="btn-skill-add" onclick="addSkill('lang')">+</button>
+          </div>
+        </div>
+
+        <!-- Hobi -->
+        <div class="form-group">
+          <label class="form-label">Hobi & Minat</label>
+          <textarea class="form-textarea" id="hobi" style="min-height:70px"
+            placeholder="Cth: Fotografi, Menulis Konten, Hiking..."></textarea>
+        </div>
+
+      </div>
+
+      <!-- Sertifikat -->
+      <div style="margin-top:28px">
+        <p class="form-label" style="margin-bottom:12px">Sertifikat & Penghargaan</p>
+        <div class="card-list" id="cert-list"></div>
+        <button class="btn-add-card" onclick="addCert()">＋ Tambah Sertifikat</button>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prevStep()">← Kembali</button>
+        <button class="btn btn-primary" onclick="nextStep()">Lihat Preview →</button>
+      </div>
+    </section>
+
+
+    <!-- ╔════════════════════════════════╗
+         ║  STEP 5 — PREVIEW & DOWNLOAD  ║
+         ╚════════════════════════════════╝ -->
+    <section class="step-page" id="step-5">
+      <p class="page-eyebrow">Langkah 05 / 05</p>
+      <h1 class="page-title">Preview & Unduh</h1>
+      <p class="page-desc">Cek tampilan CV kamu, lalu download sebagai PDF.</p>
+
+      <div class="preview-layout">
+
+        <!-- CV Preview -->
+        <div class="cv-frame" id="cv-frame">
+          <!-- Built by app.js buildPreview() -->
+        </div>
+
+        <!-- Action Panel -->
+        <div class="action-panel">
+          <p class="action-title">🎉 CV Siap!</p>
+          <p class="action-desc">CV kamu sudah siap. Download langsung sebagai PDF — tidak perlu login, tidak perlu akun.</p>
+
+          <button class="btn-dl" id="btn-dl" onclick="downloadPDF()">
+            ⬇ Download PDF
+          </button>
+
+          <div class="divider"></div>
+
+          <button class="btn-sheets" onclick="sendToGAS()">
+            📊 Simpan ke Google Sheets
+          </button>
+
+          <div class="gas-section">
+            <label>URL Google Apps Script:</label>
+            <input class="form-input" id="gas-url"
+              placeholder="https://script.google.com/macros/s/.../exec"
+              style="font-size:11px;padding:7px 10px" />
+            <div class="gas-status-msg" id="gas-status"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <button class="btn btn-ghost" onclick="prevStep()" style="width:100%;justify-content:center">
+            ← Edit CV
+          </button>
+          <button class="btn btn-green" onclick="resetForm()" style="width:100%;justify-content:center">
+            ✦ Buat CV Baru
+          </button>
+        </div>
+
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-ghost" onclick="prevStep()">← Kembali Edit</button>
+        <button class="btn btn-green" onclick="resetForm()">✦ Buat CV Baru</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast" id="toast"></div>
+
+</body>
+</html>
