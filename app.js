@@ -79,16 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ── NAVIGATION ── */
 function goStep(n) {
   document.getElementById(`step-${S.step}`).classList.remove('active');
-  document.querySelectorAll('.sbtn').forEach(b => b.classList.remove('active'));
   S.step = n;
   document.getElementById(`step-${n}`).classList.add('active');
-  document.querySelector(`.sbtn[data-step="${n}"]`).classList.add('active');
   if (n === 5) { buildPreview(); setTimeout(rescale, 80); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 function nextStep() {
   if (S.step >= 5) return;
-  document.querySelector(`.sbtn[data-step="${S.step}"]`).classList.add('done');
   goStep(S.step + 1);
 }
 function prevStep() { if (S.step > 1) goStep(S.step - 1); }
