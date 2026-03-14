@@ -1,766 +1,680 @@
-/* ═══════════════════════════════════════════════════════════
-   CV GENERATOR — app.js
-   ═══════════════════════════════════════════════════════════ */
-
+/* ═══════════════════════════════════════════════════════
+   CV GENERATOR — app.js  v2
+   Fix utama: PDF rendering match preview (scale trick)
+   ═══════════════════════════════════════════════════════ */
 'use strict';
 
-/* ────────────────────────────────────────────────────────────
-   DATA: DAFTAR JURUSAN (60+)
-   Setiap jurusan punya: label, template (visual style), color
-   ──────────────────────────────────────────────────────────── */
-const JURUSAN_DATA = [
-  // ── IT & Teknologi
+/* ─── JURUSAN DATA (60+) ─── */
+const JURUSAN = [
   { cat: '💻 IT & Teknologi', items: [
-    { val: 'Teknik Informatika',         tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Ilmu Komputer',              tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Sistem Informasi',           tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Teknik Komputer',            tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Keamanan Siber',             tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Data Science',               tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Kecerdasan Buatan / AI',     tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Software Engineering',       tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Rekayasa Perangkat Lunak',   tpl: 'tech',   color: '#38bdf8' },
-    { val: 'Teknologi Informasi',        tpl: 'tech',   color: '#38bdf8' },
+    { val:'Teknik Informatika', tpl:'tech', color:'#6366f1' },
+    { val:'Ilmu Komputer', tpl:'tech', color:'#6366f1' },
+    { val:'Sistem Informasi', tpl:'tech', color:'#6366f1' },
+    { val:'Teknik Komputer', tpl:'tech', color:'#6366f1' },
+    { val:'Keamanan Siber', tpl:'tech', color:'#6366f1' },
+    { val:'Data Science', tpl:'tech', color:'#6366f1' },
+    { val:'Kecerdasan Buatan / AI', tpl:'tech', color:'#6366f1' },
+    { val:'Software Engineering', tpl:'tech', color:'#6366f1' },
+    { val:'Rekayasa Perangkat Lunak', tpl:'tech', color:'#6366f1' },
+    { val:'Teknologi Informasi', tpl:'tech', color:'#6366f1' },
   ]},
-  // ── Teknik
   { cat: '⚙️ Teknik & Engineering', items: [
-    { val: 'Teknik Sipil',               tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Mesin',               tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Elektro',             tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Kimia',               tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Industri',            tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Lingkungan',          tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Pertambangan',        tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Perminyakan',         tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Biomedis',            tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Penerbangan',         tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Material',            tpl: 'teknik', color: '#f97316' },
-    { val: 'Teknik Geodesi',             tpl: 'teknik', color: '#f97316' },
+    { val:'Teknik Sipil', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Mesin', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Elektro', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Kimia', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Industri', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Lingkungan', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Pertambangan', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Perminyakan', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Biomedis', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Penerbangan', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Material', tpl:'teknik', color:'#f97316' },
+    { val:'Teknik Geodesi', tpl:'teknik', color:'#f97316' },
   ]},
-  // ── Bisnis & Ekonomi
   { cat: '📊 Bisnis & Ekonomi', items: [
-    { val: 'Manajemen Bisnis',           tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Akuntansi',                  tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Ekonomi',                    tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Ekonomi Pembangunan',        tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Manajemen Keuangan',         tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Manajemen Pemasaran',        tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Manajemen SDM',              tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Bisnis Internasional',       tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Perbankan & Keuangan',       tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Kewirausahaan',              tpl: 'bisnis', color: '#ffd700' },
-    { val: 'Administrasi Bisnis',        tpl: 'bisnis', color: '#ffd700' },
+    { val:'Manajemen Bisnis', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Akuntansi', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Ekonomi', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Ekonomi Pembangunan', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Manajemen Keuangan', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Manajemen Pemasaran', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Manajemen SDM', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Bisnis Internasional', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Perbankan & Keuangan', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Kewirausahaan', tpl:'bisnis', color:'#c9a84c' },
+    { val:'Administrasi Bisnis', tpl:'bisnis', color:'#c9a84c' },
   ]},
-  // ── Kesehatan
   { cat: '⚕️ Kesehatan & Medis', items: [
-    { val: 'Kedokteran Umum',            tpl: 'medis',  color: '#0d9488' },
-    { val: 'Kedokteran Gigi',            tpl: 'medis',  color: '#0d9488' },
-    { val: 'Keperawatan',                tpl: 'medis',  color: '#0d9488' },
-    { val: 'Farmasi',                    tpl: 'medis',  color: '#0d9488' },
-    { val: 'Kesehatan Masyarakat',       tpl: 'medis',  color: '#0d9488' },
-    { val: 'Gizi & Dietisien',           tpl: 'medis',  color: '#0d9488' },
-    { val: 'Fisioterapi',                tpl: 'medis',  color: '#0d9488' },
-    { val: 'Kebidanan',                  tpl: 'medis',  color: '#0d9488' },
-    { val: 'Analis Kesehatan',           tpl: 'medis',  color: '#0d9488' },
-    { val: 'Radiologi',                  tpl: 'medis',  color: '#0d9488' },
-    { val: 'Rekam Medis',                tpl: 'medis',  color: '#0d9488' },
+    { val:'Kedokteran Umum', tpl:'medis', color:'#0d9488' },
+    { val:'Kedokteran Gigi', tpl:'medis', color:'#0d9488' },
+    { val:'Keperawatan', tpl:'medis', color:'#0d9488' },
+    { val:'Farmasi', tpl:'medis', color:'#0d9488' },
+    { val:'Kesehatan Masyarakat', tpl:'medis', color:'#0d9488' },
+    { val:'Gizi & Dietisien', tpl:'medis', color:'#0d9488' },
+    { val:'Fisioterapi', tpl:'medis', color:'#0d9488' },
+    { val:'Kebidanan', tpl:'medis', color:'#0d9488' },
+    { val:'Analis Kesehatan', tpl:'medis', color:'#0d9488' },
+    { val:'Radiologi', tpl:'medis', color:'#0d9488' },
+    { val:'Rekam Medis', tpl:'medis', color:'#0d9488' },
   ]},
-  // ── Desain & Seni
   { cat: '🎨 Desain & Kreatif', items: [
-    { val: 'Desain Komunikasi Visual',   tpl: 'desain', color: '#a855f7' },
-    { val: 'Desain Grafis',              tpl: 'desain', color: '#a855f7' },
-    { val: 'Desain Interior',            tpl: 'desain', color: '#a855f7' },
-    { val: 'Desain Produk',              tpl: 'desain', color: '#a855f7' },
-    { val: 'Seni Rupa',                  tpl: 'desain', color: '#a855f7' },
-    { val: 'Arsitektur',                 tpl: 'desain', color: '#a855f7' },
-    { val: 'Animasi & Film',             tpl: 'desain', color: '#a855f7' },
-    { val: 'Fotografi',                  tpl: 'desain', color: '#a855f7' },
-    { val: 'Mode & Tekstil',             tpl: 'desain', color: '#a855f7' },
-    { val: 'UI/UX Design',               tpl: 'desain', color: '#a855f7' },
+    { val:'Desain Komunikasi Visual', tpl:'desain', color:'#7c3aed' },
+    { val:'Desain Grafis', tpl:'desain', color:'#7c3aed' },
+    { val:'Desain Interior', tpl:'desain', color:'#7c3aed' },
+    { val:'Desain Produk', tpl:'desain', color:'#7c3aed' },
+    { val:'Seni Rupa', tpl:'desain', color:'#7c3aed' },
+    { val:'Arsitektur', tpl:'desain', color:'#7c3aed' },
+    { val:'Animasi & Film', tpl:'desain', color:'#7c3aed' },
+    { val:'Fotografi', tpl:'desain', color:'#7c3aed' },
+    { val:'Mode & Tekstil', tpl:'desain', color:'#7c3aed' },
+    { val:'UI/UX Design', tpl:'desain', color:'#7c3aed' },
   ]},
-  // ── Hukum & Sosial
   { cat: '⚖️ Hukum, Sosial & Pendidikan', items: [
-    { val: 'Hukum',                      tpl: 'formal', color: '#78350f' },
-    { val: 'Hukum Bisnis',               tpl: 'formal', color: '#78350f' },
-    { val: 'Ilmu Pemerintahan',          tpl: 'formal', color: '#78350f' },
-    { val: 'Hubungan Internasional',     tpl: 'formal', color: '#78350f' },
-    { val: 'Ilmu Komunikasi',            tpl: 'formal', color: '#78350f' },
-    { val: 'Psikologi',                  tpl: 'formal', color: '#78350f' },
-    { val: 'Sosiologi',                  tpl: 'formal', color: '#78350f' },
-    { val: 'Pendidikan',                 tpl: 'formal', color: '#78350f' },
-    { val: 'Sastra Indonesia',           tpl: 'formal', color: '#78350f' },
-    { val: 'Sastra Inggris',             tpl: 'formal', color: '#78350f' },
-    { val: 'Jurnalistik',                tpl: 'formal', color: '#78350f' },
-    { val: 'Administrasi Publik',        tpl: 'formal', color: '#78350f' },
+    { val:'Hukum', tpl:'formal', color:'#8b6914' },
+    { val:'Hukum Bisnis', tpl:'formal', color:'#8b6914' },
+    { val:'Ilmu Pemerintahan', tpl:'formal', color:'#8b6914' },
+    { val:'Hubungan Internasional', tpl:'formal', color:'#8b6914' },
+    { val:'Ilmu Komunikasi', tpl:'formal', color:'#8b6914' },
+    { val:'Psikologi', tpl:'formal', color:'#8b6914' },
+    { val:'Sosiologi', tpl:'formal', color:'#8b6914' },
+    { val:'Pendidikan', tpl:'formal', color:'#8b6914' },
+    { val:'Sastra Indonesia', tpl:'formal', color:'#8b6914' },
+    { val:'Sastra Inggris', tpl:'formal', color:'#8b6914' },
+    { val:'Jurnalistik', tpl:'formal', color:'#8b6914' },
+    { val:'Administrasi Publik', tpl:'formal', color:'#8b6914' },
   ]},
 ];
 
-/* ────────────────────────────────────────────────────────────
-   STATE
-   ──────────────────────────────────────────────────────────── */
-const state = {
-  step:        1,
-  photoBase64: null,
-  photoName:   null,
-  jurusan:     null,        // { val, tpl, color }
-  hardSkills:  [],
-  softSkills:  [],
-  langSkills:  [],
-  eduCount:    0,
-  expCount:    0,
-  certCount:   0,
+/* ─── STATE ─── */
+const S = {
+  step: 1,
+  photo: null,
+  jurusan: null,
+  hard: [], soft: [], lang: [],
+  eduN: 0, expN: 0, certN: 0,
 };
 
-/* ────────────────────────────────────────────────────────────
-   INIT
-   ──────────────────────────────────────────────────────────── */
+/* ─── INIT ─── */
 document.addEventListener('DOMContentLoaded', () => {
-  buildJurusanPicker();
-  addEdu();
-  addExp();
-  addCert();
-  updateProgress();
+  buildJurPicker();
+  addEdu(); addExp(); addCert();
+  updateProg();
+  window.addEventListener('resize', rescaleCV);
 });
 
-/* ────────────────────────────────────────────────────────────
-   NAVIGATION
-   ──────────────────────────────────────────────────────────── */
-function goToStep(n) {
-  document.getElementById(`step-${state.step}`).classList.remove('active');
+/* ─── NAVIGATION ─── */
+function goStep(n) {
+  document.getElementById(`step-${S.step}`).classList.remove('active');
   document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
-  state.step = n;
+  S.step = n;
   document.getElementById(`step-${n}`).classList.add('active');
   document.querySelector(`.step-btn[data-step="${n}"]`).classList.add('active');
-  updateProgress();
-  if (n === 5) buildPreview();
+  updateProg();
+  if (n === 5) { buildPreview(); setTimeout(rescaleCV, 60); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
-
 function nextStep() {
-  if (state.step >= 5) return;
-  document.querySelector(`.step-btn[data-step="${state.step}"]`).classList.add('done');
-  goToStep(state.step + 1);
+  if (S.step >= 5) return;
+  document.querySelector(`.step-btn[data-step="${S.step}"]`).classList.add('done');
+  goStep(S.step + 1);
+}
+function prevStep() { if (S.step > 1) goStep(S.step - 1); }
+function updateProg() {
+  const p = (S.step / 5) * 100;
+  document.getElementById('prog-bar').style.width = p + '%';
+  document.getElementById('prog-pct').textContent = Math.round(p) + '%';
 }
 
-function prevStep() {
-  if (state.step <= 1) return;
-  goToStep(state.step - 1);
-}
-
-function updateProgress() {
-  const pct = (state.step / 5) * 100;
-  document.getElementById('progress-bar').style.width = pct + '%';
-  document.getElementById('progress-pct').textContent = Math.round(pct) + '%';
-}
-
-/* ────────────────────────────────────────────────────────────
-   PHOTO UPLOAD
-   ──────────────────────────────────────────────────────────── */
-function triggerPhotoInput() {
-  document.getElementById('photo-file').click();
-}
-
-function handlePhotoUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  if (file.size > 5 * 1024 * 1024) {
-    showToast('⚠️ Foto terlalu besar! Maksimal 5MB.', 'error');
-    return;
-  }
-  if (!file.type.startsWith('image/')) {
-    showToast('⚠️ File harus berupa gambar (JPG/PNG).', 'error');
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    state.photoBase64 = ev.target.result;
-    state.photoName   = file.name;
-
-    // Update drop zone UI
+/* ─── PHOTO ─── */
+function triggerPhoto() { document.getElementById('photo-file').click(); }
+function handlePhoto(e) {
+  const f = e.target.files[0];
+  if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { toast('⚠ Foto max 5MB', 'err'); return; }
+  if (!f.type.startsWith('image/')) { toast('⚠ File harus gambar', 'err'); return; }
+  const r = new FileReader();
+  r.onload = ev => {
+    S.photo = ev.target.result;
     const drop = document.getElementById('photo-drop');
-    drop.classList.add('has-photo');
-    drop.innerHTML = `
-      <img src="${state.photoBase64}" alt="foto profil" />
-      <div class="drop-overlay">
-        <span>📷</span>
-        Ganti Foto
-      </div>
-    `;
-
-    // Show filename
-    const nameEl = document.getElementById('photo-name');
-    nameEl.textContent = '✓ ' + file.name;
-    nameEl.classList.add('show');
-
-    showToast('✓ Foto berhasil diupload!', 'success');
+    drop.classList.add('filled');
+    drop.innerHTML = `<img src="${S.photo}" alt="foto"/><div class="drop-ov"><span>📷</span>Ganti</div>`;
+    const fn = document.getElementById('photo-fname');
+    fn.textContent = '✓ ' + f.name;
+    fn.classList.add('show');
+    toast('✓ Foto berhasil diupload!', 'ok');
   };
-  reader.onerror = () => showToast('✗ Gagal membaca file foto.', 'error');
-  reader.readAsDataURL(file);
+  r.onerror = () => toast('✗ Gagal baca file', 'err');
+  r.readAsDataURL(f);
 }
 
-/* ────────────────────────────────────────────────────────────
-   JURUSAN PICKER
-   ──────────────────────────────────────────────────────────── */
-function buildJurusanPicker() {
-  const scroll = document.getElementById('jurusan-scroll');
+/* ─── JURUSAN PICKER ─── */
+function buildJurPicker() {
+  const scroll = document.getElementById('jur-scroll');
   scroll.innerHTML = '';
-
-  JURUSAN_DATA.forEach(cat => {
-    const catDiv = document.createElement('div');
-    catDiv.className = 'jurusan-category';
-    catDiv.dataset.cat = cat.cat;
-
-    const label = document.createElement('span');
-    label.className = 'jurusan-cat-label';
-    label.textContent = cat.cat;
-    catDiv.appendChild(label);
-
+  JURUSAN.forEach(cat => {
+    const wrap = document.createElement('div');
+    wrap.dataset.cat = cat.cat;
+    const lbl = document.createElement('span');
+    lbl.className = 'jur-cat-lbl'; lbl.textContent = cat.cat;
+    wrap.appendChild(lbl);
     const opts = document.createElement('div');
-    opts.className = 'jurusan-options';
-
+    opts.className = 'jur-opts';
     cat.items.forEach(item => {
       const chip = document.createElement('div');
-      chip.className = 'jurusan-chip';
+      chip.className = 'jur-chip';
       chip.dataset.val = item.val;
-      chip.dataset.tpl = item.tpl;
-      chip.dataset.color = item.color;
-      chip.innerHTML = `<span class="chip-dot" style="background:${item.color}"></span>${item.val}`;
-      chip.addEventListener('click', () => selectJurusan(chip, item));
+      chip.innerHTML = `<span class="jur-dot" style="background:${item.color}"></span>${item.val}`;
+      chip.addEventListener('click', () => selJur(chip, item));
       opts.appendChild(chip);
     });
-
-    catDiv.appendChild(opts);
-    scroll.appendChild(catDiv);
+    wrap.appendChild(opts);
+    scroll.appendChild(wrap);
   });
 }
 
-function selectJurusan(chip, item) {
-  document.querySelectorAll('.jurusan-chip').forEach(c => c.classList.remove('selected'));
-  chip.classList.add('selected');
-  state.jurusan = item;
-
-  const badge = document.getElementById('jurusan-badge');
-  badge.textContent = item.val;
-  badge.classList.add('show');
-  badge.style.borderColor = item.color + '66';
-  badge.style.color = item.color;
-  badge.style.background = item.color + '18';
-
-  document.getElementById('jurusan-search').value = '';
-  filterJurusan('');
+function selJur(chip, item) {
+  document.querySelectorAll('.jur-chip').forEach(c => c.classList.remove('sel'));
+  chip.classList.add('sel');
+  S.jurusan = item;
+  const b = document.getElementById('jur-badge');
+  b.textContent = item.val;
+  b.classList.add('show');
+  b.style.cssText = `border-color:${item.color}55;color:${item.color};background:${item.color}18;`;
+  document.getElementById('jur-search').value = '';
+  filterJur('');
 }
 
-function filterJurusan(q) {
-  const lower = q.toLowerCase();
-  let anyVisible = false;
-
-  document.querySelectorAll('.jurusan-category').forEach(catDiv => {
-    const chips = catDiv.querySelectorAll('.jurusan-chip');
-    let catHasMatch = false;
-    chips.forEach(chip => {
-      const match = !lower || chip.dataset.val.toLowerCase().includes(lower);
-      chip.style.display = match ? '' : 'none';
-      if (match) catHasMatch = true;
+function filterJur(q) {
+  const low = q.toLowerCase();
+  let any = false;
+  document.querySelectorAll('#jur-scroll > div').forEach(catDiv => {
+    const chips = catDiv.querySelectorAll('.jur-chip');
+    let has = false;
+    chips.forEach(c => {
+      const m = !low || c.dataset.val.toLowerCase().includes(low);
+      c.style.display = m ? '' : 'none';
+      if (m) has = true;
     });
-    catDiv.style.display = catHasMatch ? '' : 'none';
-    if (catHasMatch) anyVisible = true;
+    catDiv.style.display = has ? '' : 'none';
+    if (has) any = true;
   });
-
-  const empty = document.getElementById('jurusan-empty');
-  empty.classList.toggle('show', !anyVisible);
+  document.getElementById('jur-empty').classList.toggle('show', !any);
 }
 
-/* ────────────────────────────────────────────────────────────
-   DYNAMIC CARDS
-   ──────────────────────────────────────────────────────────── */
+/* ─── DYNAMIC CARDS ─── */
 function addEdu() {
-  state.eduCount++;
-  const n = state.eduCount;
-  const list = document.getElementById('edu-list');
-  const card = document.createElement('div');
-  card.className = 'dyn-card';
-  card.id = `edu-card-${n}`;
-  card.innerHTML = `
-    <div class="card-head">
-      <span class="card-badge">Pendidikan #${n}</span>
-      <button class="btn-rm" onclick="removeCard('edu-card-${n}')">Hapus</button>
-    </div>
-    <div class="form-grid">
-      <div class="form-group span2">
-        <label class="form-label">Nama Institusi <span class="req">*</span></label>
-        <input class="form-input" name="edu-institusi" placeholder="Universitas Indonesia / SMA Negeri 1 Jakarta" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Jurusan / Program Studi</label>
-        <input class="form-input" name="edu-jurusan" placeholder="Teknik Informatika" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Gelar / Jenjang</label>
-        <input class="form-input" name="edu-gelar" placeholder="S1 / D3 / SMA / SMK" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tahun Mulai</label>
-        <input class="form-input" name="edu-start" placeholder="2019" maxlength="4" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tahun Selesai</label>
-        <input class="form-input" name="edu-end" placeholder="2023 / Sekarang" />
-      </div>
-      <div class="form-group span2">
-        <label class="form-label">IPK / Nilai (opsional)</label>
-        <input class="form-input" name="edu-ipk" placeholder="3.85 / 4.00" />
-      </div>
-    </div>`;
-  list.appendChild(card);
+  S.eduN++;
+  const n = S.eduN;
+  appendCard('edu-list', `edu-card-${n}`, `Pendidikan #${n}`, `removeCard('edu-card-${n}')`, `
+    <div class="fgrid">
+      <div class="fg s2"><label class="flbl">Nama Institusi <span class="req">*</span></label>
+        <input class="fi" name="edu-inst" placeholder="Universitas Indonesia / SMA N 1 Jakarta"/></div>
+      <div class="fg"><label class="flbl">Jurusan / Program Studi</label>
+        <input class="fi" name="edu-jur" placeholder="Teknik Informatika"/></div>
+      <div class="fg"><label class="flbl">Gelar / Jenjang</label>
+        <input class="fi" name="edu-gel" placeholder="S1 / D3 / SMA"/></div>
+      <div class="fg"><label class="flbl">Tahun Mulai</label>
+        <input class="fi" name="edu-start" placeholder="2019" maxlength="4"/></div>
+      <div class="fg"><label class="flbl">Tahun Selesai</label>
+        <input class="fi" name="edu-end" placeholder="2023 / Sekarang"/></div>
+      <div class="fg s2"><label class="flbl">IPK / Nilai (opsional)</label>
+        <input class="fi" name="edu-ipk" placeholder="3.85 / 4.00"/></div>
+    </div>`);
 }
 
 function addExp() {
-  state.expCount++;
-  const n = state.expCount;
-  const list = document.getElementById('exp-list');
-  const card = document.createElement('div');
-  card.className = 'dyn-card';
-  card.id = `exp-card-${n}`;
-  card.innerHTML = `
-    <div class="card-head">
-      <span class="card-badge">Pengalaman #${n}</span>
-      <button class="btn-rm" onclick="removeCard('exp-card-${n}')">Hapus</button>
-    </div>
-    <div class="form-grid">
-      <div class="form-group">
-        <label class="form-label">Perusahaan / Organisasi <span class="req">*</span></label>
-        <input class="form-input" name="exp-perusahaan" placeholder="PT. Contoh Jaya / BEM Universitas" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Posisi / Jabatan <span class="req">*</span></label>
-        <input class="form-input" name="exp-posisi" placeholder="Frontend Developer" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Jenis Pekerjaan</label>
-        <select class="form-select" name="exp-type">
+  S.expN++;
+  const n = S.expN;
+  appendCard('exp-list', `exp-card-${n}`, `Pengalaman #${n}`, `removeCard('exp-card-${n}')`, `
+    <div class="fgrid">
+      <div class="fg"><label class="flbl">Perusahaan / Organisasi <span class="req">*</span></label>
+        <input class="fi" name="exp-co" placeholder="PT. Contoh Jaya"/></div>
+      <div class="fg"><label class="flbl">Posisi / Jabatan <span class="req">*</span></label>
+        <input class="fi" name="exp-pos" placeholder="Frontend Developer"/></div>
+      <div class="fg"><label class="flbl">Jenis</label>
+        <select class="fsel" name="exp-type">
           <option value="">— Pilih —</option>
-          <option>Full-time</option>
-          <option>Part-time</option>
-          <option>Magang / Internship</option>
-          <option>Freelance</option>
-          <option>Organisasi</option>
-          <option>Volunteer</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Lokasi</label>
-        <input class="form-input" name="exp-lokasi" placeholder="Jakarta / Remote" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Periode Mulai</label>
-        <input class="form-input" name="exp-start" placeholder="Jan 2022" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Periode Selesai</label>
-        <input class="form-input" name="exp-end" placeholder="Des 2023 / Sekarang" />
-      </div>
-      <div class="form-group span2">
-        <label class="form-label">Deskripsi & Pencapaian</label>
-        <textarea class="form-textarea" name="exp-desc" placeholder="• Mengembangkan fitur X menggunakan teknologi Y&#10;• Berhasil meningkatkan performa Z sebesar 30%&#10;• Berkolaborasi dengan tim lintas divisi..."></textarea>
-      </div>
-    </div>`;
-  list.appendChild(card);
+          <option>Full-time</option><option>Part-time</option>
+          <option>Magang / Internship</option><option>Freelance</option>
+          <option>Organisasi</option><option>Volunteer</option>
+        </select></div>
+      <div class="fg"><label class="flbl">Lokasi</label>
+        <input class="fi" name="exp-loc" placeholder="Jakarta / Remote"/></div>
+      <div class="fg"><label class="flbl">Periode Mulai</label>
+        <input class="fi" name="exp-start" placeholder="Jan 2022"/></div>
+      <div class="fg"><label class="flbl">Periode Selesai</label>
+        <input class="fi" name="exp-end" placeholder="Des 2023 / Sekarang"/></div>
+      <div class="fg s2"><label class="flbl">Deskripsi & Pencapaian</label>
+        <textarea class="fta" name="exp-desc" placeholder="• Mengembangkan fitur X dengan teknologi Y&#10;• Meningkatkan performa Z sebesar 30%&#10;• Berkolaborasi dengan tim lintas divisi..."></textarea></div>
+    </div>`);
 }
 
 function addCert() {
-  state.certCount++;
-  const n = state.certCount;
-  const list = document.getElementById('cert-list');
+  S.certN++;
+  const n = S.certN;
+  appendCard('cert-list', `cert-card-${n}`, `Sertifikat #${n}`, `removeCard('cert-card-${n}')`, `
+    <div class="fgrid">
+      <div class="fg s2"><label class="flbl">Nama Sertifikat / Penghargaan <span class="req">*</span></label>
+        <input class="fi" name="cert-nama" placeholder="Google Professional Cloud Architect"/></div>
+      <div class="fg"><label class="flbl">Penerbit</label>
+        <input class="fi" name="cert-iss" placeholder="Google / Coursera / Dicoding"/></div>
+      <div class="fg"><label class="flbl">Tahun</label>
+        <input class="fi" name="cert-yr" placeholder="2024" maxlength="4"/></div>
+    </div>`);
+}
+
+function appendCard(listId, cardId, badge, rmFn, innerHTML) {
+  const list = document.getElementById(listId);
   const card = document.createElement('div');
-  card.className = 'dyn-card';
-  card.id = `cert-card-${n}`;
+  card.className = 'dcard'; card.id = cardId;
   card.innerHTML = `
-    <div class="card-head">
-      <span class="card-badge">Sertifikat #${n}</span>
-      <button class="btn-rm" onclick="removeCard('cert-card-${n}')">Hapus</button>
-    </div>
-    <div class="form-grid">
-      <div class="form-group span2">
-        <label class="form-label">Nama Sertifikat / Penghargaan <span class="req">*</span></label>
-        <input class="form-input" name="cert-nama" placeholder="Google Professional Cloud Architect" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Penerbit / Issuer</label>
-        <input class="form-input" name="cert-issuer" placeholder="Google / Coursera / Dicoding" />
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tahun</label>
-        <input class="form-input" name="cert-tahun" placeholder="2024" maxlength="4" />
-      </div>
-    </div>`;
+    <div class="dcard-head">
+      <span class="dcard-badge">${badge}</span>
+      <button class="btn-rm" onclick="${rmFn}">Hapus</button>
+    </div>${innerHTML}`;
   list.appendChild(card);
 }
 
 function removeCard(id) {
   const el = document.getElementById(id);
-  if (el) {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(-8px)';
-    el.style.transition = 'all 0.2s ease';
-    setTimeout(() => el.remove(), 200);
-  }
+  if (!el) return;
+  el.style.cssText = 'opacity:0;transform:translateY(-6px);transition:all 0.18s';
+  setTimeout(() => el.remove(), 200);
 }
 
-/* ────────────────────────────────────────────────────────────
-   SKILLS
-   ──────────────────────────────────────────────────────────── */
+/* ─── SKILLS ─── */
 function addSkill(type) {
-  const inputId = `${type}-input`;
-  const input   = document.getElementById(inputId);
-  const val     = input.value.trim();
+  const inp = document.getElementById(`${type}-inp`);
+  const val = inp.value.trim();
   if (!val) return;
-
-  const arr = type === 'hard' ? state.hardSkills
-            : type === 'soft' ? state.softSkills
-            : state.langSkills;
-
-  if (arr.includes(val)) {
-    showToast('Skill sudah ada!', 'error');
-    input.value = '';
-    return;
-  }
-
+  const arr = type === 'hard' ? S.hard : type === 'soft' ? S.soft : S.lang;
+  if (arr.includes(val)) { toast('Skill sudah ada!', 'err'); inp.value = ''; return; }
   arr.push(val);
-
-  const container = document.getElementById(`${type}-chips`);
+  const box = document.getElementById(`${type}-chips`);
   const chip = document.createElement('div');
-  chip.className = 's-chip';
-  chip.dataset.val = val;
-  chip.innerHTML = `${val} <button onclick="removeSkill(this,'${type}','${val.replace(/'/g, "\\'")}')" title="Hapus">×</button>`;
-  container.appendChild(chip);
-  input.value = '';
-  input.focus();
+  chip.className = 'schip';
+  chip.dataset.v = val;
+  chip.innerHTML = `${val} <button onclick="rmSkill(this,'${type}','${val.replace(/'/g,"\\'")}')">×</button>`;
+  box.appendChild(chip);
+  inp.value = ''; inp.focus();
 }
 
-function removeSkill(btn, type, val) {
-  const arr = type === 'hard' ? state.hardSkills
-            : type === 'soft' ? state.softSkills
-            : state.langSkills;
-  const idx = arr.indexOf(val);
-  if (idx > -1) arr.splice(idx, 1);
-  btn.closest('.s-chip').remove();
+function rmSkill(btn, type, val) {
+  const arr = type === 'hard' ? S.hard : type === 'soft' ? S.soft : S.lang;
+  const i = arr.indexOf(val);
+  if (i > -1) arr.splice(i, 1);
+  btn.closest('.schip').remove();
 }
 
-/* ────────────────────────────────────────────────────────────
-   COLLECT ALL FORM DATA
-   ──────────────────────────────────────────────────────────── */
-function g(id) {
-  return (document.getElementById(id)?.value || '').trim();
-}
-
-function collectData() {
-  const edus = [];
-  document.querySelectorAll('#edu-list .dyn-card').forEach(c => {
-    edus.push({
-      institusi: c.querySelector('[name="edu-institusi"]')?.value?.trim() || '',
-      jurusan:   c.querySelector('[name="edu-jurusan"]')?.value?.trim() || '',
-      gelar:     c.querySelector('[name="edu-gelar"]')?.value?.trim() || '',
-      start:     c.querySelector('[name="edu-start"]')?.value?.trim() || '',
-      end:       c.querySelector('[name="edu-end"]')?.value?.trim() || '',
-      ipk:       c.querySelector('[name="edu-ipk"]')?.value?.trim() || '',
-    });
-  });
-
-  const exps = [];
-  document.querySelectorAll('#exp-list .dyn-card').forEach(c => {
-    exps.push({
-      perusahaan: c.querySelector('[name="exp-perusahaan"]')?.value?.trim() || '',
-      posisi:     c.querySelector('[name="exp-posisi"]')?.value?.trim() || '',
-      type:       c.querySelector('[name="exp-type"]')?.value?.trim() || '',
-      lokasi:     c.querySelector('[name="exp-lokasi"]')?.value?.trim() || '',
-      start:      c.querySelector('[name="exp-start"]')?.value?.trim() || '',
-      end:        c.querySelector('[name="exp-end"]')?.value?.trim() || '',
-      desc:       c.querySelector('[name="exp-desc"]')?.value?.trim() || '',
-    });
-  });
-
-  const certs = [];
-  document.querySelectorAll('#cert-list .dyn-card').forEach(c => {
-    certs.push({
-      nama:   c.querySelector('[name="cert-nama"]')?.value?.trim() || '',
-      issuer: c.querySelector('[name="cert-issuer"]')?.value?.trim() || '',
-      tahun:  c.querySelector('[name="cert-tahun"]')?.value?.trim() || '',
-    });
-  });
-
+/* ─── COLLECT DATA ─── */
+function g(id) { return (document.getElementById(id)?.value || '').trim(); }
+function collect() {
+  const edus = [], exps = [], certs = [];
+  document.querySelectorAll('#edu-list .dcard').forEach(c => edus.push({
+    inst:  c.querySelector('[name="edu-inst"]')?.value?.trim() || '',
+    jur:   c.querySelector('[name="edu-jur"]')?.value?.trim() || '',
+    gel:   c.querySelector('[name="edu-gel"]')?.value?.trim() || '',
+    start: c.querySelector('[name="edu-start"]')?.value?.trim() || '',
+    end:   c.querySelector('[name="edu-end"]')?.value?.trim() || '',
+    ipk:   c.querySelector('[name="edu-ipk"]')?.value?.trim() || '',
+  }));
+  document.querySelectorAll('#exp-list .dcard').forEach(c => exps.push({
+    co:    c.querySelector('[name="exp-co"]')?.value?.trim() || '',
+    pos:   c.querySelector('[name="exp-pos"]')?.value?.trim() || '',
+    type:  c.querySelector('[name="exp-type"]')?.value?.trim() || '',
+    loc:   c.querySelector('[name="exp-loc"]')?.value?.trim() || '',
+    start: c.querySelector('[name="exp-start"]')?.value?.trim() || '',
+    end:   c.querySelector('[name="exp-end"]')?.value?.trim() || '',
+    desc:  c.querySelector('[name="exp-desc"]')?.value?.trim() || '',
+  }));
+  document.querySelectorAll('#cert-list .dcard').forEach(c => certs.push({
+    nama: c.querySelector('[name="cert-nama"]')?.value?.trim() || '',
+    iss:  c.querySelector('[name="cert-iss"]')?.value?.trim() || '',
+    yr:   c.querySelector('[name="cert-yr"]')?.value?.trim() || '',
+  }));
   return {
-    jurusan:     state.jurusan,
-    photo:       state.photoBase64,
-    nama:        g('nama'),
-    posisi:      g('posisi'),
-    ttl:         g('ttl'),
-    email:       g('email'),
-    phone:       g('phone'),
-    alamat:      g('alamat'),
-    linkedin:    g('linkedin'),
-    website:     g('website'),
-    ringkasan:   g('ringkasan'),
+    jurusan: S.jurusan, photo: S.photo,
+    nama: g('nama'), posisi: g('posisi'), ttl: g('ttl'),
+    email: g('email'), phone: g('phone'), alamat: g('alamat'),
+    linkedin: g('linkedin'), website: g('website'), ringkasan: g('ringkasan'),
     edus, exps, certs,
-    hardSkills:  [...state.hardSkills],
-    softSkills:  [...state.softSkills],
-    langSkills:  [...state.langSkills],
-    hobi:        g('hobi'),
+    hard: [...S.hard], soft: [...S.soft], lang: [...S.lang],
+    hobi: g('hobi'),
   };
 }
 
-/* ────────────────────────────────────────────────────────────
-   BUILD CV HTML (for preview + PDF)
-   ──────────────────────────────────────────────────────────── */
-function buildCVHTML(d) {
+/* ─── BUILD CV HTML ─── */
+function buildCV(d) {
   const tpl = d.jurusan?.tpl || 'tech';
-
-  // Photo element
-  const photoEl = d.photo
-    ? `<div class="cv-photo-wrap"><img src="${d.photo}" alt="foto profil" crossorigin="anonymous" /></div>`
-    : `<div class="cv-photo-placeholder">👤</div>`;
-
-  // Contacts
-  const contactItems = [
-    d.email    && d.email,
-    d.phone    && d.phone,
-    d.alamat   && d.alamat,
-    d.linkedin && d.linkedin,
-    d.website  && d.website,
-  ].filter(Boolean);
-
-  const contactsHTML = contactItems
-    .map(c => `<span class="cv-contact">${c}</span>`)
-    .join('');
-
-  // Education
-  const eduHTML = d.edus.filter(e => e.institusi).length
-    ? d.edus.filter(e => e.institusi).map(e => `
-      <div class="cv-item">
-        <div class="cv-item-name">${e.institusi}</div>
-        ${(e.jurusan || e.gelar) ? `<div class="cv-item-sub">${[e.jurusan, e.gelar].filter(Boolean).join(' · ')}</div>` : ''}
-        <div class="cv-item-date">${[e.start, e.end].filter(Boolean).join(' – ')}${e.ipk ? ` &nbsp;·&nbsp; IPK ${e.ipk}` : ''}</div>
-      </div>`).join('')
-    : '<div class="cv-item-desc" style="color:#9ca3af;font-style:italic;font-size:11px">Belum diisi</div>';
-
-  // Experience
-  const expHTML = d.exps.filter(e => e.perusahaan).length
-    ? d.exps.filter(e => e.perusahaan).map(e => `
-      <div class="cv-item">
-        <div class="cv-item-name">${e.posisi}</div>
-        <div class="cv-item-sub">${e.perusahaan}${e.type ? ` · ${e.type}` : ''}${e.lokasi ? ` · ${e.lokasi}` : ''}</div>
-        <div class="cv-item-date">${[e.start, e.end].filter(Boolean).join(' – ')}</div>
-        ${e.desc ? `<div class="cv-item-desc">${e.desc.replace(/\n/g, '<br/>')}</div>` : ''}
-      </div>`).join('')
-    : '<div class="cv-item-desc" style="color:#9ca3af;font-style:italic;font-size:11px">Belum diisi</div>';
-
-  // Skills
-  const allSkills = [...d.hardSkills, ...d.softSkills];
-  const skillsHTML = allSkills.map(s => `<span class="cv-chip">${s}</span>`).join('');
-  const langHTML   = d.langSkills.map(l => `<span class="cv-chip">${l}</span>`).join('');
-
-  // Certs
-  const certHTML = d.certs.filter(c => c.nama).map(c => `
-    <div class="cv-item" style="margin-bottom:7px">
-      <div class="cv-item-name" style="font-size:11px">${c.nama}</div>
-      ${(c.issuer || c.tahun) ? `<div class="cv-item-date">${[c.issuer, c.tahun].filter(Boolean).join(' · ')}</div>` : ''}
-    </div>`).join('');
-
   const name = d.nama || 'Nama Lengkap';
-  const role = d.posisi || (d.jurusan?.val ? d.jurusan.val : 'Posisi / Jabatan');
-  const summary = d.ringkasan
-    ? `<div class="cv-sec"><div class="cv-sec-title">Tentang Saya</div><div class="cv-summary">${d.ringkasan}</div></div>`
+  const role = d.posisi || (d.jurusan?.val || 'Posisi / Jabatan');
+
+  const photoEl = (cls, size='80') => d.photo
+    ? `<div class="${cls}-photo"><img src="${d.photo}" alt="foto"/></div>`
+    : `<div class="${cls}-ph">👤</div>`;
+
+  const cts = [d.email, d.phone, d.alamat, d.linkedin, d.website].filter(Boolean);
+  const ctHTML = suffix => cts.map(c => `<span class="${suffix}-ci">${c}</span>`).join('');
+
+  const allSkills = [...d.hard, ...d.soft];
+  const chipsFn = (cls, arr) => arr.length
+    ? arr.map(s => `<span class="${cls}">${s}</span>`).join('')
     : '';
 
-  // ── Template: formal (single column body)
-  if (tpl === 'formal') {
-    return `<div class="cv-wrap cv-formal">
-      <div class="cv-header">
-        ${d.photo
-          ? `<div class="cv-photo-wrap" style="margin:0 auto 10px;display:block">${`<img src="${d.photo}" alt="foto" crossorigin="anonymous"/>`}</div>`
-          : `<div class="cv-photo-placeholder">👤</div>`}
-        <div class="cv-name">${name}</div>
-        <div class="cv-role">${role}</div>
-        ${d.ttl ? `<div style="font-family:'DM Sans',sans-serif;font-size:10px;color:#9ca3af;margin-top:3px">${d.ttl}</div>` : ''}
-        <div class="cv-contacts">${contactsHTML}</div>
+  const eduFn = (itemCls) => d.edus.filter(e=>e.inst).length
+    ? d.edus.filter(e=>e.inst).map(e => `
+      <div class="${itemCls}">
+        <div class="${itemCls}title">${e.inst}</div>
+        ${(e.jur||e.gel) ? `<div class="${itemCls}sub">${[e.jur,e.gel].filter(Boolean).join(' · ')}</div>` : ''}
+        <div class="${itemCls}date">${[e.start,e.end].filter(Boolean).join(' – ')}${e.ipk?` · IPK ${e.ipk}`:''}</div>
+      </div>`).join('')
+    : '<div style="font-size:10px;color:#9ca3af;font-style:italic">Belum diisi</div>';
+
+  const expFn = (itemCls) => d.exps.filter(e=>e.co).length
+    ? d.exps.filter(e=>e.co).map(e => `
+      <div class="${itemCls}">
+        <div class="${itemCls}title">${e.pos}</div>
+        <div class="${itemCls}sub">${e.co}${e.type?' · '+e.type:''}${e.loc?' · '+e.loc:''}</div>
+        <div class="${itemCls}date">${[e.start,e.end].filter(Boolean).join(' – ')}</div>
+        ${e.desc ? `<div class="${itemCls}desc">${e.desc.replace(/\n/g,'<br/>')}</div>` : ''}
+      </div>`).join('')
+    : '<div style="font-size:10px;color:#9ca3af;font-style:italic">Belum diisi</div>';
+
+  const certFn = (itemCls) => d.certs.filter(c=>c.nama).map(c => `
+    <div class="${itemCls}" style="margin-bottom:7px">
+      <div class="${itemCls}title">${c.nama}</div>
+      ${(c.iss||c.yr)?`<div class="${itemCls}date">${[c.iss,c.yr].filter(Boolean).join(' · ')}</div>`:''}
+    </div>`).join('');
+
+  if (tpl === 'tech') {
+    const chips = chipsFn('ts-chip', allSkills);
+    const langs = d.lang.map(l=>`<div class="ts-lang">${l}</div>`).join('');
+    return `<div class="cvt tpl-tech">
+      <div class="ts">
+        ${photoEl('ts')}
+        <div class="ts-name">${name}</div>
+        <div class="ts-role">${role}</div>
+        <div class="ts-div"></div>
+        <div>
+          <div class="ts-stl">Kontak</div>
+          ${d.email?`<div class="ts-ci"><b>Email</b>${d.email}</div>`:''}
+          ${d.phone?`<div class="ts-ci"><b>Telepon</b>${d.phone}</div>`:''}
+          ${d.alamat?`<div class="ts-ci"><b>Lokasi</b>${d.alamat}</div>`:''}
+          ${d.linkedin?`<div class="ts-ci"><b>LinkedIn</b>${d.linkedin}</div>`:''}
+          ${d.website?`<div class="ts-ci"><b>Website</b>${d.website}</div>`:''}
+          ${d.ttl?`<div class="ts-ci"><b>TTL</b>${d.ttl}</div>`:''}
+        </div>
+        ${chips?`<div><div class="ts-stl">Skills</div><div>${chips}</div></div>`:''}
+        ${langs?`<div><div class="ts-stl">Bahasa</div>${langs}</div>`:''}
+        ${d.hobi?`<div><div class="ts-stl">Hobi</div><div class="ts-hobi">${d.hobi}</div></div>`:''}
       </div>
-      <div class="cv-body">
-        ${summary}
-        <div class="cv-sec"><div class="cv-sec-title">Pendidikan</div>${eduHTML}</div>
-        <div class="cv-sec"><div class="cv-sec-title">Pengalaman</div>${expHTML}</div>
-        ${certHTML ? `<div class="cv-sec"><div class="cv-sec-title">Sertifikat & Penghargaan</div>${certHTML}</div>` : ''}
-        ${skillsHTML ? `<div class="cv-sec"><div class="cv-sec-title">Kemampuan</div>${skillsHTML}</div>` : ''}
-        ${langHTML ? `<div class="cv-sec"><div class="cv-sec-title">Bahasa</div>${langHTML}</div>` : ''}
-        ${d.hobi ? `<div class="cv-sec"><div class="cv-sec-title">Hobi & Minat</div><div class="cv-item-desc">${d.hobi}</div></div>` : ''}
+      <div class="tm">
+        <div class="tm-name">${name}</div>
+        <div class="tm-role">${role}</div>
+        ${d.ringkasan?`<div class="tm-sum">${d.ringkasan}</div>`:''}
+        <div class="tm-sec">
+          <div class="tm-stl">Pengalaman Kerja</div>
+          ${expFn('tm-i')}
+        </div>
+        <div class="tm-sec">
+          <div class="tm-stl">Pendidikan</div>
+          ${eduFn('tm-i')}
+        </div>
+        ${certFn('tm-i')?`<div class="tm-sec"><div class="tm-stl">Sertifikat</div>${certFn('tm-i')}</div>`:''}
       </div>
     </div>`;
   }
 
-  // ── Template: bisnis (top row header)
   if (tpl === 'bisnis') {
-    return `<div class="cv-wrap cv-bisnis">
-      <div class="cv-header">
-        <div class="cv-top">
-          ${photoEl}
+    const chips = chipsFn('b-chip', allSkills);
+    const langs = d.lang.map(l=>`<div class="b-lang">${l}</div>`).join('');
+    return `<div class="cvt tpl-bisnis">
+      <div class="th">
+        ${photoEl('th')}
+        <div>
+          <div class="th-name">${name}</div>
+          <div class="th-role">${role}</div>
+          ${d.ttl?`<div style="font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px">${d.ttl}</div>`:''}
+          <div class="th-cts">${ctHTML('th')}</div>
+        </div>
+      </div>
+      <div class="tgbar"></div>
+      <div class="tb">
+        <div>
+          ${d.ringkasan?`<div class="b-sec"><div class="b-stl">Profil</div><div class="b-sum">${d.ringkasan}</div></div>`:''}
+          <div class="b-sec"><div class="b-stl">Pengalaman Kerja</div>${expFn('b-i')}</div>
+          <div class="b-sec"><div class="b-stl">Pendidikan</div>${eduFn('b-i')}</div>
+          ${certFn('b-i')?`<div class="b-sec"><div class="b-stl">Sertifikat</div>${certFn('b-i')}</div>`:''}
+        </div>
+        <div>
+          ${chips?`<div class="b-sec"><div class="b-stl">Skills</div>${chips}</div>`:''}
+          ${langs?`<div class="b-sec"><div class="b-stl">Bahasa</div>${langs}</div>`:''}
+          ${d.hobi?`<div class="b-sec"><div class="b-stl">Hobi</div><div style="font-size:10.5px;color:#555">${d.hobi}</div></div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  if (tpl === 'desain') {
+    const chips = chipsFn('d-chip', allSkills);
+    const langs = d.lang.map(l=>`<div class="d-lang">${l}</div>`).join('');
+    return `<div class="cvt tpl-desain">
+      <div class="tstripe"></div>
+      <div class="tinner">
+        <div class="dh">
+          ${photoEl('dh')}
           <div>
-            <div class="cv-name">${name}</div>
-            <div class="cv-role">${role}</div>
-            ${d.ttl ? `<div style="font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px">${d.ttl}</div>` : ''}
-            <div class="cv-contacts">${contactsHTML}</div>
+            <div class="dh-name">${name}</div>
+            <div class="dh-role">${role}</div>
+            ${d.ttl?`<div style="font-size:10px;color:#9ca3af;margin-top:2px">${d.ttl}</div>`:''}
+            <div class="dh-cts">${cts.map(c=>`<span class="dh-ci">${c}</span>`).join('')}</div>
+          </div>
+        </div>
+        <div class="db">
+          <div class="dm">
+            ${d.ringkasan?`<div class="d-sec"><div class="d-stl">Tentang Saya</div><div class="d-sum">${d.ringkasan}</div></div>`:''}
+            <div class="d-sec"><div class="d-stl">Pengalaman</div>${expFn('d-i')}</div>
+            <div class="d-sec"><div class="d-stl">Pendidikan</div>${eduFn('d-i')}</div>
+            ${certFn('d-i')?`<div class="d-sec"><div class="d-stl">Sertifikat</div>${certFn('d-i')}</div>`:''}
+          </div>
+          <div class="ds">
+            ${chips?`<div class="d-sec"><div class="d-stl">Skills</div><div>${chips}</div></div>`:''}
+            ${langs?`<div class="d-sec"><div class="d-stl">Bahasa</div>${langs}</div>`:''}
+            ${d.hobi?`<div class="d-sec"><div class="d-stl">Hobi</div><div class="d-lang">${d.hobi}</div></div>`:''}
           </div>
         </div>
       </div>
-      <div class="cv-body">
+    </div>`;
+  }
+
+  if (tpl === 'medis') {
+    const chips = chipsFn('m-chip', allSkills);
+    const langs = d.lang.map(l=>`<div class="m-lang">${l}</div>`).join('');
+    return `<div class="cvt tpl-medis">
+      <div class="mh">
+        ${photoEl('mh')}
         <div>
-          ${summary}
-          <div class="cv-sec"><div class="cv-sec-title">Pengalaman Kerja</div>${expHTML}</div>
-          <div class="cv-sec"><div class="cv-sec-title">Pendidikan</div>${eduHTML}</div>
-          ${certHTML ? `<div class="cv-sec"><div class="cv-sec-title">Sertifikat</div>${certHTML}</div>` : ''}
+          <div class="mh-name">${name}</div>
+          <div class="mh-role">${role}</div>
+          ${d.ttl?`<div style="font-size:10px;color:#9ca3af;margin-top:2px">${d.ttl}</div>`:''}
+          <div class="mh-cts">${ctHTML('mh')}</div>
+        </div>
+      </div>
+      <div class="mb">
+        <div>
+          ${d.ringkasan?`<div class="m-sec"><div class="m-stl">Profil</div><div class="m-sum">${d.ringkasan}</div></div>`:''}
+          <div class="m-sec"><div class="m-stl">Pengalaman</div>${expFn('m-i')}</div>
+          <div class="m-sec"><div class="m-stl">Pendidikan</div>${eduFn('m-i')}</div>
+          ${certFn('m-i')?`<div class="m-sec"><div class="m-stl">Sertifikat</div>${certFn('m-i')}</div>`:''}
         </div>
         <div>
-          ${skillsHTML ? `<div class="cv-sec"><div class="cv-sec-title">Skills</div>${skillsHTML}</div>` : ''}
-          ${langHTML ? `<div class="cv-sec"><div class="cv-sec-title">Bahasa</div>${langHTML}</div>` : ''}
-          ${d.hobi ? `<div class="cv-sec"><div class="cv-sec-title">Hobi</div><div class="cv-item-desc" style="font-size:10.5px;color:#555">${d.hobi}</div></div>` : ''}
+          ${chips?`<div class="m-sec"><div class="m-stl">Skills</div><div>${chips}</div></div>`:''}
+          ${langs?`<div class="m-sec"><div class="m-stl">Bahasa</div>${langs}</div>`:''}
+          ${d.hobi?`<div class="m-sec"><div class="m-stl">Hobi</div><div class="m-lang">${d.hobi}</div></div>`:''}
         </div>
       </div>
     </div>`;
   }
 
-  // ── Default two-column: tech, teknik, desain, medis
-  const sidebarContent = `
-    ${skillsHTML ? `<div class="cv-sec"><div class="cv-sec-title">Skills</div><div>${skillsHTML}</div></div>` : ''}
-    ${langHTML ? `<div class="cv-sec"><div class="cv-sec-title">Bahasa</div><div>${langHTML}</div></div>` : ''}
-    ${certHTML ? `<div class="cv-sec"><div class="cv-sec-title">Sertifikat</div>${certHTML}</div>` : ''}
-    ${d.hobi ? `<div class="cv-sec"><div class="cv-sec-title">Hobi</div><div class="cv-item-desc">${d.hobi}</div></div>` : ''}
-  `;
-
-  return `<div class="cv-wrap cv-${tpl}">
-    <div class="cv-header">
-      <div class="cv-top">
-        ${photoEl}
+  if (tpl === 'teknik') {
+    const chips = chipsFn('k-chip', allSkills);
+    const langs = d.lang.map(l=>`<div class="k-lang">${l}</div>`).join('');
+    return `<div class="cvt tpl-teknik">
+      <div class="kh">
+        ${photoEl('kh')}
         <div>
-          <div class="cv-name">${name}</div>
-          <div class="cv-role">${role}</div>
-          ${d.ttl ? `<div style="font-size:10px;opacity:0.6;margin-top:2px">${d.ttl}</div>` : ''}
-          <div class="cv-contacts">${contactsHTML}</div>
+          <div class="kh-name">${name}</div>
+          <div class="kh-role">${role}</div>
+          ${d.ttl?`<div style="font-size:10px;color:#71717a;margin-top:2px">${d.ttl}</div>`:''}
+          <div class="kh-cts">${ctHTML('kh')}</div>
         </div>
       </div>
-    </div>
-    <div class="cv-body">
-      <div class="cv-main">
-        ${summary}
-        <div class="cv-sec"><div class="cv-sec-title">Pengalaman</div>${expHTML}</div>
-        <div class="cv-sec"><div class="cv-sec-title">Pendidikan</div>${eduHTML}</div>
+      <div class="kb">
+        <div class="km">
+          ${d.ringkasan?`<div class="k-sec"><div class="k-stl">Profil</div><div class="k-sum">${d.ringkasan}</div></div>`:''}
+          <div class="k-sec"><div class="k-stl">Pengalaman</div>${expFn('k-i')}</div>
+          <div class="k-sec"><div class="k-stl">Pendidikan</div>${eduFn('k-i')}</div>
+          ${certFn('k-i')?`<div class="k-sec"><div class="k-stl">Sertifikat</div>${certFn('k-i')}</div>`:''}
+        </div>
+        <div class="ks">
+          ${chips?`<div class="k-sec"><div class="k-stl">Skills</div><div>${chips}</div></div>`:''}
+          ${langs?`<div class="k-sec"><div class="k-stl">Bahasa</div>${langs}</div>`:''}
+          ${d.hobi?`<div class="k-sec"><div class="k-stl">Hobi</div><div class="k-lang">${d.hobi}</div></div>`:''}
+        </div>
       </div>
-      <div class="cv-side">${sidebarContent}</div>
+    </div>`;
+  }
+
+  // formal
+  const chips = chipsFn('f-chip', allSkills);
+  const langs = d.lang.map(l=>`<div class="f-lang">${l}</div>`).join('');
+  return `<div class="cvt tpl-formal">
+    <div class="fh">
+      ${d.photo
+        ? `<div class="fh-photo"><img src="${d.photo}" alt="foto"/></div>`
+        : `<div class="fh-ph">👤</div>`}
+      <div class="fh-name">${name}</div>
+      <div class="fh-role">${role}</div>
+      ${d.ttl?`<div style="font-size:10px;color:#9ca3af;margin-top:2px">${d.ttl}</div>`:''}
+      <div class="fh-cts">${ctHTML('fh')}</div>
+    </div>
+    <div class="fb">
+      <div>
+        ${d.ringkasan?`<div class="f-sec"><div class="f-stl">Profil</div><div class="f-sum">${d.ringkasan}</div></div>`:''}
+        <div class="f-sec"><div class="f-stl">Pengalaman</div>${expFn('f-i')}</div>
+        <div class="f-sec"><div class="f-stl">Pendidikan</div>${eduFn('f-i')}</div>
+        ${certFn('f-i')?`<div class="f-sec"><div class="f-stl">Sertifikat</div>${certFn('f-i')}</div>`:''}
+      </div>
+      <div>
+        ${chips?`<div class="f-sec"><div class="f-stl">Skills</div><div>${chips}</div></div>`:''}
+        ${langs?`<div class="f-sec"><div class="f-stl">Bahasa</div>${langs}</div>`:''}
+        ${d.hobi?`<div class="f-sec"><div class="f-stl">Hobi</div><div class="f-lang">${d.hobi}</div></div>`:''}
+      </div>
     </div>
   </div>`;
 }
 
-/* ────────────────────────────────────────────────────────────
-   PREVIEW
-   ──────────────────────────────────────────────────────────── */
+/* ─── PREVIEW ─── */
 function buildPreview() {
-  const d = collectData();
-  document.getElementById('cv-frame').innerHTML = buildCVHTML(d);
+  const d = collect();
+  document.getElementById('cv-frame').innerHTML = buildCV(d);
 }
 
-/* ────────────────────────────────────────────────────────────
-   DOWNLOAD PDF
-   ──────────────────────────────────────────────────────────── */
-function downloadPDF() {
-  const d    = collectData();
-  const nama = d.nama || 'CV';
-  const el   = document.getElementById('cv-frame');
-  const btn  = document.getElementById('btn-dl');
+/* KEY FIX: Scale cv-frame to fit preview container */
+function rescaleCV() {
+  const frame = document.getElementById('cv-frame');
+  const wrap  = document.querySelector('.cv-scale-wrap');
+  if (!frame || !wrap) return;
+  const containerW = wrap.parentElement.clientWidth;
+  const scale = Math.min(1, (containerW - 2) / 794);
+  frame.style.transform = `scale(${scale})`;
+  // Set wrap height to match scaled content
+  const frameH = frame.scrollHeight || 1122;
+  wrap.style.height = (frameH * scale) + 'px';
+}
 
-  btn.classList.add('loading');
-  btn.textContent = '⏳ Membuat PDF...';
-  showToast('⏳ Membuat PDF, mohon tunggu...', '');
+/* ─── PDF DOWNLOAD ─── */
+function downloadPDF() {
+  const d    = collect();
+  const nama = d.nama || 'CV';
+  const frame = document.getElementById('cv-frame');
+  const btn   = document.getElementById('btn-dl');
+
+  // Temporarily remove scale transform for PDF capture
+  const prevTransform = frame.style.transform;
+  frame.style.transform = 'none';
+
+  btn.classList.add('busy');
+  btn.innerHTML = '⏳ Membuat PDF...';
+  toast('⏳ Membuat PDF, mohon tunggu...', '');
 
   const opt = {
     margin:      0,
-    filename:    `CV_${nama.replace(/\s+/g, '_')}.pdf`,
+    filename:    `CV_${nama.replace(/\s+/g,'_')}.pdf`,
     image:       { type: 'jpeg', quality: 0.97 },
-    html2canvas: { scale: 2, useCORS: true, allowTaint: true, letterRendering: true },
-    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    html2canvas: {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      letterRendering: true,
+      width: 794,
+      windowWidth: 794,
+    },
+    jsPDF: { unit: 'px', format: [794, 1122], orientation: 'portrait', hotfixes: ['px_scaling'] },
   };
 
   html2pdf()
     .set(opt)
-    .from(el)
+    .from(frame)
     .save()
     .then(() => {
-      showToast(`✓ CV "${nama}" berhasil diunduh!`, 'success');
-      btn.classList.remove('loading');
+      frame.style.transform = prevTransform;
+      toast(`✓ CV "${nama}" berhasil diunduh!`, 'ok');
+      btn.classList.remove('busy');
       btn.innerHTML = '⬇ Download PDF';
     })
     .catch(err => {
+      frame.style.transform = prevTransform;
       console.error(err);
-      showToast('✗ Gagal membuat PDF. Coba lagi.', 'error');
-      btn.classList.remove('loading');
+      toast('✗ Gagal PDF. Coba lagi.', 'err');
+      btn.classList.remove('busy');
       btn.innerHTML = '⬇ Download PDF';
     });
 }
 
-/* ────────────────────────────────────────────────────────────
-   SEND TO GOOGLE APPS SCRIPT
-   ──────────────────────────────────────────────────────────── */
+/* ─── GAS ─── */
 async function sendToGAS() {
-  const url    = document.getElementById('gas-url').value.trim();
-  const status = document.getElementById('gas-status');
-
-  if (!url) {
-    showToast('⚠️ Isi dulu URL Google Apps Script!', 'error');
-    return;
-  }
-
-  status.className = 'gas-status-msg loading';
-  status.textContent = '⏳ Mengirim data ke Google Sheets...';
-
-  const d = collectData();
+  const url = document.getElementById('gas-url').value.trim();
+  const msg = document.getElementById('gas-msg');
+  if (!url) { toast('⚠ Isi URL Google Apps Script dulu!', 'err'); return; }
+  msg.className = 'gas-msg loading'; msg.textContent = '⏳ Mengirim...';
+  const d = collect();
   const payload = {
-    ...d,
-    photo:     d.photo ? '[FOTO_BASE64_TIDAK_DIKIRIM]' : null,
-    jurusan:   d.jurusan?.val || '',
-    template:  d.jurusan?.tpl || '',
+    ...d, photo: null,
+    jurusan: d.jurusan?.val || '', template: d.jurusan?.tpl || '',
     timestamp: new Date().toISOString(),
   };
-
   try {
-    await fetch(url, {
-      method:  'POST',
-      mode:    'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body:    JSON.stringify(payload),
-    });
-    // no-cors = response opaque, tapi request terkirim
-    status.className = 'gas-status-msg ok';
-    status.textContent = '✓ Data terkirim ke Google Sheets!';
-    showToast('✓ Tersimpan ke Google Sheets!', 'success');
-  } catch (err) {
-    status.className = 'gas-status-msg fail';
-    status.textContent = '✗ Gagal. Cek URL & setting GAS (Anyone).';
-    showToast('✗ Gagal kirim ke GAS', 'error');
+    await fetch(url, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: JSON.stringify(payload) });
+    msg.className = 'gas-msg ok'; msg.textContent = '✓ Tersimpan ke Google Sheets!';
+    toast('✓ Data tersimpan ke Sheets!', 'ok');
+  } catch(e) {
+    msg.className = 'gas-msg fail'; msg.textContent = '✗ Gagal. Cek URL & setting GAS.';
+    toast('✗ Gagal kirim', 'err');
   }
 }
 
-/* ────────────────────────────────────────────────────────────
-   RESET
-   ──────────────────────────────────────────────────────────── */
 function resetForm() {
-  if (!confirm('Buat CV baru? Semua data yang sudah diisi akan dihapus.')) return;
+  if (!confirm('Buat CV baru? Semua data akan dihapus.')) return;
   location.reload();
 }
 
-/* ────────────────────────────────────────────────────────────
-   TOAST
-   ──────────────────────────────────────────────────────────── */
-function showToast(msg, type) {
+/* ─── TOAST ─── */
+function toast(msg, type) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = `toast show ${type}`;
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 3800);
+  clearTimeout(t._t);
+  t._t = setTimeout(() => t.classList.remove('show'), 3500);
 }
