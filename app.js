@@ -64,7 +64,7 @@ const COLOR_GROUPS = [
 const S = {
   step: 1,
   photo: null,
-  accentColor: '#000000',
+  accentColor: '#1e3a5f',
   hard: [], soft: [], lang: [],
   eduN: 0, expN: 0, certN: 0,
 };
@@ -99,10 +99,9 @@ function buildColorPicker() {
     grpLabel.className = 'cp-group-label';
     grpLabel.textContent = group.label;
     wrap.appendChild(grpLabel);
-
     const row = document.createElement('div');
     row.className = 'cp-row';
-    group.colors.forEach((c, i) => {
+    group.colors.forEach(c => {
       const sw = document.createElement('div');
       sw.className = 'color-swatch' + (c.hex === S.accentColor ? ' active' : '');
       sw.style.background = c.hex;
@@ -113,9 +112,10 @@ function buildColorPicker() {
     });
     wrap.appendChild(row);
   });
-  // first swatch active by default
-  const first = wrap.querySelector('.color-swatch');
-  if (first) first.classList.add('active');
+  // sync hex input with default
+  document.getElementById('color-hex').value = S.accentColor;
+  document.getElementById('color-native').value = S.accentColor;
+  document.getElementById('accent-preview-dot').style.background = S.accentColor;
 
   document.getElementById('color-native').addEventListener('input', e => {
     setAccent(e.target.value, null);
@@ -297,188 +297,150 @@ function collect() {
   };
 }
 
-/* ── BUILD CV HTML — matches reference layout ── */
-function buildCV(d) {
-  const ac = d.accent || '#000000';
-  // Compute a light text color for left sidebar
-  // Parse hex to determine if light or dark, then decide text color
-  const r = parseInt(ac.slice(1,3),16), g = parseInt(ac.slice(3,5),16), b = parseInt(ac.slice(5,7),16);
-  const luma = 0.299*r + 0.587*g + 0.114*b;
-  const sideText = luma > 140 ? '#1a1a1a' : '#ffffff';
-  const sideTextSub = luma > 140 ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.72)';
-  const sideDivider = luma > 140 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.2)';
 
-  const name = d.nama || 'NAMA LENGKAP';
+/* ── BUILD CV HTML ── */
+function buildCV(d) {
+  const ac = d.accent || '#1e3a5f';
+  const r = parseInt(ac.slice(1,3),16), g = parseInt(ac.slice(3,5),16), b2 = parseInt(ac.slice(5,7),16);
+  const luma = 0.299*r + 0.587*g + 0.114*b2;
+  const onAc        = luma > 145 ? '#1a1a1a'              : '#ffffff';
+  const onAcSub     = luma > 145 ? 'rgba(0,0,0,0.62)'     : 'rgba(255,255,255,0.72)';
+  const onAcDivide  = luma > 145 ? 'rgba(0,0,0,0.15)'     : 'rgba(255,255,255,0.22)';
+  const photoBorder = luma > 145 ? 'rgba(0,0,0,0.2)'      : 'rgba(255,255,255,0.45)';
+  const photoBg     = luma > 145 ? 'rgba(0,0,0,0.08)'     : 'rgba(255,255,255,0.18)';
+
+  const name = d.nama  || 'NAMA LENGKAP';
   const role = d.posisi || 'Posisi / Jabatan';
 
-  // Photo — circle with white border
-  const photoHTML = d.photo
-    ? `<div class="cv-photo-wrap"><img src="${d.photo}" alt="foto" crossorigin="anonymous"/></div>`
-    : `<div class="cv-photo-wrap cv-photo-ph"><span>👤</span></div>`;
-
-  // LEFT SIDEBAR: Kontak
+  /* Kontak */
   const contacts = [
-    d.phone    && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>`, text: d.phone },
-    d.email    && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`, text: d.email },
-    d.alamat   && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`, text: d.alamat },
-    d.linkedin && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>`, text: d.linkedin },
-    d.website  && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>`, text: d.website },
-    d.ttl      && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>`, text: d.ttl },
+    d.phone    && { icon:'&#9742;', text: d.phone },
+    d.email    && { icon:'&#9993;', text: d.email },
+    d.alamat   && { icon:'&#8962;', text: d.alamat },
+    d.linkedin && { icon:'in',      text: d.linkedin },
+    d.website  && { icon:'&#8853;', text: d.website },
+    d.ttl      && { icon:'&#9670;', text: d.ttl },
   ].filter(Boolean);
 
   const contactHTML = contacts.map(c => `
-    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:7px">
-      <span style="flex-shrink:0;margin-top:1px;opacity:0.85">${c.svg}</span>
-      <span style="font-size:9.5px;color:${sideTextSub};line-height:1.45;word-break:break-all">${c.text}</span>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px">
+      <span style="flex-shrink:0;width:17px;height:17px;border-radius:50%;
+        background:${onAcDivide};display:flex;align-items:center;justify-content:center;
+        font-size:9px;color:${onAc};line-height:1">${c.icon}</span>
+      <span style="font-size:9.5px;color:${onAcSub};line-height:1.5;word-break:break-all">${c.text}</span>
     </div>`).join('');
 
-  // Education
-  const eduHTML = d.edus.filter(e=>e.inst).map(e => `
-    <div style="margin-bottom:10px">
-      <div style="font-size:10px;font-weight:700;color:${sideText};line-height:1.3">${e.inst}</div>
-      ${(e.jur||e.gel) ? `<div style="font-size:9.5px;color:${sideTextSub};margin-top:2px">${[e.jur,e.gel].filter(Boolean).join(' · ')}</div>` : ''}
-      ${(e.s||e.e) ? `<div style="font-size:9px;color:${sideTextSub};margin-top:1px">${[e.s,e.e].filter(Boolean).join(' – ')}</div>` : ''}
-      ${e.ipk ? `<div style="font-size:9px;color:${sideTextSub}">IPK: ${e.ipk}</div>` : ''}
-    </div>`).join('') || `<div style="font-size:9.5px;color:${sideTextSub};font-style:italic">Belum diisi</div>`;
+  /* Sidebar section title */
+  const sT = t => `<div style="font-size:8.5px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+    color:${onAc};padding-bottom:5px;margin-bottom:9px;border-bottom:1px solid ${onAcDivide}">${t}</div>`;
 
-  // Skills
+  /* Pendidikan */
+  const eduHTML = d.edus.filter(e=>e.inst).map(e=>`
+    <div style="margin-bottom:11px">
+      <div style="font-size:10px;font-weight:700;color:${onAc};line-height:1.3">${e.inst}</div>
+      ${(e.jur||e.gel)?`<div style="font-size:9px;color:${onAcSub};margin-top:2px">${[e.jur,e.gel].filter(Boolean).join(' · ')}</div>`:''}
+      ${(e.s||e.e)?`<div style="font-size:8.5px;color:${onAcSub};margin-top:1px">${[e.s,e.e].filter(Boolean).join(' \u2013 ')}</div>`:''}
+      ${e.ipk?`<div style="font-size:8.5px;color:${onAcSub}">IPK: ${e.ipk}</div>`:''}
+    </div>`).join('') || `<div style="font-size:9px;color:${onAcSub};font-style:italic">Belum diisi</div>`;
+
+  /* Skills */
   const allSkills = [...d.hard, ...d.soft];
-  const skillsHTML = allSkills.length
-    ? allSkills.map(s => `
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
-        <span style="width:5px;height:5px;border-radius:50%;background:${sideText};flex-shrink:0;opacity:0.7"></span>
-        <span style="font-size:9.5px;color:${sideTextSub}">${s}</span>
-      </div>`).join('')
-    : `<div style="font-size:9.5px;color:${sideTextSub};font-style:italic">Belum diisi</div>`;
+  const skillsHTML = allSkills.map(s=>`
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+      <span style="width:4px;height:4px;border-radius:50%;background:${onAc};flex-shrink:0;opacity:.75"></span>
+      <span style="font-size:9.5px;color:${onAcSub}">${s}</span>
+    </div>`).join('');
 
-  // Lang
-  const langHTML = d.lang.length
-    ? d.lang.map(l=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="width:5px;height:5px;border-radius:50%;background:${sideText};flex-shrink:0;opacity:0.7"></span><span style="font-size:9.5px;color:${sideTextSub}">${l}</span></div>`).join('')
-    : '';
+  const langHTML = d.lang.map(l=>`
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:5px">
+      <span style="width:4px;height:4px;border-radius:50%;background:${onAc};flex-shrink:0;opacity:.75"></span>
+      <span style="font-size:9.5px;color:${onAcSub}">${l}</span>
+    </div>`).join('');
 
-  // LEFT SIDEBAR section header
-  const sideSecTitle = (t) => `
-    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-                color:${sideText};padding-bottom:5px;margin-bottom:10px;
-                border-bottom:1px solid ${sideDivider}">${t}</div>`;
+  /* Right section title */
+  const mT = t => `<div style="font-size:9px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;
+    color:#111;padding-bottom:5px;margin-bottom:12px;border-bottom:2px solid ${ac}">${t}</div>`;
 
-  // RIGHT MAIN: Experience
-  const expHTML = d.exps.filter(e=>e.co).map(e => {
-    const period = [e.s, e.e].filter(Boolean).join(' – ');
-    const subline = [e.co, e.type, e.loc].filter(Boolean).join(' · ');
+  /* Pengalaman */
+  const expHTML = d.exps.filter(e=>e.co).map(e=>{
+    const period = [e.s,e.e].filter(Boolean).join(' \u2013 ');
+    const sub = [e.co,e.type,e.loc].filter(Boolean).join(' \u00b7 ');
     let bullets = '';
     if (e.desc) {
-      const lines = e.desc.split('\n').map(l=>l.trim().replace(/^[-•·]\s*/,'')).filter(Boolean);
-      bullets = `<ul style="padding-left:0;list-style:none;margin-top:5px">${
-        lines.map(b=>`<li style="padding-left:13px;position:relative;margin-bottom:3px;font-size:10.5px;color:#444;line-height:1.55">
-          <span style="position:absolute;left:0;color:${ac};font-size:12px;line-height:1.2">•</span>${b}</li>`).join('')
-      }</ul>`;
+      const lines = e.desc.split('\n').map(l=>l.trim().replace(/^[-\u2022\u00b7]\s*/,'')).filter(Boolean);
+      bullets = `<ul style="padding:0;list-style:none;margin-top:5px">${
+        lines.map(b=>`<li style="padding-left:12px;position:relative;margin-bottom:3px;font-size:10px;color:#444;line-height:1.6">
+          <span style="position:absolute;left:0;top:0;color:${ac};font-weight:900">\u00b7</span>${b}</li>`
+        ).join('')}</ul>`;
     }
-    return `
-      <div style="margin-bottom:14px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
-          <div style="font-size:11.5px;font-weight:700;color:#111">${e.pos}</div>
-          ${period ? `<div style="font-size:9.5px;color:#999;white-space:nowrap;font-style:italic">${period}</div>` : ''}
-        </div>
-        ${subline ? `<div style="font-size:10px;color:${ac};font-weight:600;margin-top:1px">${subline}</div>` : ''}
-        ${bullets}
-      </div>`;
-  }).join('') || '<div style="font-size:10px;color:#aaa;font-style:italic">Belum diisi</div>';
+    return `<div style="margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+        <div style="font-size:11.5px;font-weight:700;color:#111">${e.pos}</div>
+        ${period?`<div style="font-size:9px;color:#999;white-space:nowrap;font-style:italic">${period}</div>`:''}
+      </div>
+      ${sub?`<div style="font-size:10px;color:${ac};font-weight:600;margin-top:2px">${sub}</div>`:''}
+      ${bullets}
+    </div>`;
+  }).join('') || '<div style="font-size:10px;color:#bbb;font-style:italic">Belum diisi</div>';
 
-  // Certs
-  const certHTML = d.certs.filter(c=>c.nama).map(c => `
-    <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:7px">
+  /* Sertifikat */
+  const certHTML = d.certs.filter(c=>c.nama).map(c=>`
+    <div style="display:flex;gap:8px;margin-bottom:8px">
       <span style="width:5px;height:5px;border-radius:50%;background:${ac};flex-shrink:0;margin-top:5px"></span>
       <div>
         <div style="font-size:10.5px;font-weight:600;color:#222">${c.nama}</div>
-        ${(c.iss||c.yr)?`<div style="font-size:9.5px;color:#888">${[c.iss,c.yr].filter(Boolean).join(' · ')}</div>`:''}
+        ${(c.iss||c.yr)?`<div style="font-size:9px;color:#888">${[c.iss,c.yr].filter(Boolean).join(' \u00b7 ')}</div>`:''}
       </div>
     </div>`).join('');
 
-  // RIGHT section header
-  const mainSecTitle = (t) => `
-    <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
-                color:#1a1a1a;padding-bottom:5px;margin-bottom:12px;
-                border-bottom:2px solid ${ac}">${t}</div>`;
-
   return `
-  <div style="width:794px;min-height:1123px;background:#fff;font-family:'Inter',sans-serif;font-size:12px;line-height:1.55;color:#1a1a1a;display:flex;flex-direction:column">
+  <div style="width:794px;min-height:1123px;background:#fff;font-family:'Inter',sans-serif;
+              color:#1a1a1a;display:grid;grid-template-columns:220px 1fr">
 
-    <!-- ── HEADER ── -->
-    <div style="display:flex;align-items:flex-end;padding:36px 36px 0 0">
-      <!-- Left sidebar top: photo + name block -->
-      <div style="width:218px;flex-shrink:0;background:${ac};padding:30px 22px 22px;display:flex;flex-direction:column;align-items:center;gap:14px">
+    <!-- LEFT SIDEBAR -->
+    <div style="background:${ac};padding:32px 20px 32px;display:flex;flex-direction:column;gap:0;min-height:1123px">
+
+      <!-- Foto -->
+      <div style="display:flex;justify-content:center;margin-bottom:22px">
         ${d.photo
-          ? `<div style="width:100px;height:100px;border-radius:50%;overflow:hidden;border:3px solid ${luma>140?'rgba(0,0,0,0.2)':'rgba(255,255,255,0.4)'}">
+          ? `<div style="width:108px;height:108px;border-radius:50%;overflow:hidden;border:3px solid ${photoBorder}">
                <img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;display:block" crossorigin="anonymous"/>
              </div>`
-          : `<div style="width:100px;height:100px;border-radius:50%;background:${luma>140?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.15)'};border:3px solid ${luma>140?'rgba(0,0,0,0.2)':'rgba(255,255,255,0.3)'};display:flex;align-items:center;justify-content:center;font-size:36px">👤</div>`
+          : `<div style="width:108px;height:108px;border-radius:50%;background:${photoBg};
+                         border:3px solid ${photoBorder};display:flex;align-items:center;
+                         justify-content:center;font-size:40px">&#128100;</div>`
         }
       </div>
-      <!-- Right header: big name -->
-      <div style="flex:1;padding:0 0 22px 30px">
-        <div style="font-size:44px;font-weight:800;color:#0a0a0a;letter-spacing:-1.5px;line-height:1.0;text-transform:uppercase;word-break:break-word">${name}</div>
-        <div style="font-size:10.5px;font-weight:600;color:#666;letter-spacing:3px;text-transform:uppercase;margin-top:8px">${role}</div>
-      </div>
+
+      <div style="height:1px;background:${onAcDivide};margin-bottom:20px"></div>
+
+      ${contactHTML ? `<div style="margin-bottom:18px">${sT('Kontak')}${contactHTML}</div>` : ''}
+      <div style="margin-bottom:18px">${sT('Pendidikan')}${eduHTML}</div>
+      ${allSkills.length ? `<div style="margin-bottom:18px">${sT('Kemampuan')}${skillsHTML}</div>` : ''}
+      ${langHTML        ? `<div style="margin-bottom:18px">${sT('Bahasa')}${langHTML}</div>`       : ''}
+      ${d.hobi          ? `<div>${sT('Hobi')}<div style="font-size:9.5px;color:${onAcSub};line-height:1.6">${d.hobi}</div></div>` : ''}
     </div>
 
-    <!-- ── ACCENT BAR ── -->
-    <div style="height:3px;background:${ac};margin-left:218px"></div>
+    <!-- RIGHT MAIN -->
+    <div style="padding:32px 28px;display:flex;flex-direction:column">
 
-    <!-- ── BODY ── -->
-    <div style="display:flex;flex:1">
-
-      <!-- LEFT SIDEBAR -->
-      <div style="width:218px;flex-shrink:0;background:${ac};padding:22px;display:flex;flex-direction:column;gap:18px">
-
-        ${contactHTML ? `<div>
-          ${sideSecTitle('Kontak')}
-          ${contactHTML}
-        </div>` : ''}
-
-        <div>
-          ${sideSecTitle('Pendidikan')}
-          ${eduHTML}
-        </div>
-
-        ${allSkills.length ? `<div>
-          ${sideSecTitle('Kemampuan')}
-          ${skillsHTML}
-        </div>` : ''}
-
-        ${langHTML ? `<div>
-          ${sideSecTitle('Bahasa')}
-          ${langHTML}
-        </div>` : ''}
-
-        ${d.hobi ? `<div>
-          ${sideSecTitle('Hobi')}
-          <div style="font-size:9.5px;color:${sideTextSub};line-height:1.6">${d.hobi}</div>
-        </div>` : ''}
-
+      <!-- Nama & Role -->
+      <div style="margin-bottom:22px;padding-bottom:16px;border-bottom:2px solid ${ac}">
+        <div style="font-size:40px;font-weight:800;color:#0a0a0a;letter-spacing:-1px;
+                    line-height:1.05;text-transform:uppercase;word-break:break-word">${name}</div>
+        <div style="font-size:10px;font-weight:600;color:#777;letter-spacing:3.5px;
+                    text-transform:uppercase;margin-top:8px">${role}</div>
       </div>
 
-      <!-- RIGHT MAIN -->
-      <div style="flex:1;padding:26px 30px;display:flex;flex-direction:column;gap:0">
+      ${d.ringkasan ? `<div style="margin-bottom:20px">
+        ${mT('Profil')}
+        <div style="font-size:10.5px;color:#444;line-height:1.75">${d.ringkasan}</div>
+      </div>` : ''}
 
-        ${d.ringkasan ? `
-        <div style="margin-bottom:20px">
-          ${mainSecTitle('Profil')}
-          <div style="font-size:10.5px;color:#444;line-height:1.75;text-align:justify">${d.ringkasan}</div>
-        </div>` : ''}
+      <div style="margin-bottom:20px">${mT('Pengalaman')}${expHTML}</div>
 
-        <div style="margin-bottom:20px">
-          ${mainSecTitle('Pengalaman')}
-          ${expHTML}
-        </div>
+      ${certHTML ? `<div>${mT('Kursus & Sertifikat')}${certHTML}</div>` : ''}
 
-        ${certHTML ? `
-        <div>
-          ${mainSecTitle('Kursus & Sertifikat')}
-          ${certHTML}
-        </div>` : ''}
-
-      </div>
     </div>
   </div>`;
 }
