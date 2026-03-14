@@ -4,37 +4,66 @@
    ═══════════════════════════════════════════ */
 'use strict';
 
-/* ── COLOR PRESETS ── */
-const COLOR_PRESETS = [
-  { hex: '#000000', name: 'Hitam' },
-  { hex: '#1e3a5f', name: 'Navy' },
-  { hex: '#1a472a', name: 'Hijau Tua' },
-  { hex: '#6b2737', name: 'Merah Tua' },
-  { hex: '#4a1d96', name: 'Ungu' },
-  { hex: '#92400e', name: 'Coklat' },
-  { hex: '#0e7490', name: 'Teal' },
-  { hex: '#1d4ed8', name: 'Biru' },
-  { hex: '#374151', name: 'Abu-abu' },
-  { hex: '#b45309', name: 'Amber' },
-];
-
-/* ── JURUSAN DATA ── */
-const JURUSAN = [
-  { cat: '💻 IT & Teknologi', items: ['Teknik Informatika','Ilmu Komputer','Sistem Informasi','Teknik Komputer','Keamanan Siber','Data Science','Kecerdasan Buatan / AI','Software Engineering','Rekayasa Perangkat Lunak','Teknologi Informasi'] },
-  { cat: '⚙️ Teknik & Engineering', items: ['Teknik Sipil','Teknik Mesin','Teknik Elektro','Teknik Kimia','Teknik Industri','Teknik Lingkungan','Teknik Pertambangan','Teknik Perminyakan','Teknik Biomedis','Teknik Penerbangan','Teknik Material','Teknik Geodesi'] },
-  { cat: '📊 Bisnis & Ekonomi', items: ['Manajemen Bisnis','Akuntansi','Ekonomi','Ekonomi Pembangunan','Manajemen Keuangan','Manajemen Pemasaran','Manajemen SDM','Bisnis Internasional','Perbankan & Keuangan','Kewirausahaan','Administrasi Bisnis'] },
-  { cat: '⚕️ Kesehatan & Medis', items: ['Kedokteran Umum','Kedokteran Gigi','Keperawatan','Farmasi','Kesehatan Masyarakat','Gizi & Dietisien','Fisioterapi','Kebidanan','Analis Kesehatan','Radiologi','Rekam Medis'] },
-  { cat: '🎨 Desain & Kreatif', items: ['Desain Komunikasi Visual','Desain Grafis','Desain Interior','Desain Produk','Seni Rupa','Arsitektur','Animasi & Film','Fotografi','Mode & Tekstil','UI/UX Design'] },
-  { cat: '⚖️ Hukum, Sosial & Pendidikan', items: ['Hukum','Hukum Bisnis','Ilmu Pemerintahan','Hubungan Internasional','Ilmu Komunikasi','Psikologi','Sosiologi','Pendidikan','Sastra Indonesia','Sastra Inggris','Jurnalistik','Administrasi Publik'] },
-  { cat: '🌾 Pertanian & Lingkungan', items: ['Agribisnis','Agroteknologi','Kehutanan','Ilmu Kelautan','Perikanan','Teknik Pertanian','Ilmu Tanah','Teknologi Pangan'] },
-  { cat: '🎭 Seni & Budaya', items: ['Seni Musik','Seni Tari','Seni Teater','Film & Televisi','Antropologi','Arkeologi','Sejarah','Filsafat'] },
+/* ── COLOR PRESETS — Full Palette ── */
+const COLOR_GROUPS = [
+  { label: 'Netral & Klasik', colors: [
+    { hex: '#000000', name: 'Hitam Pekat' },
+    { hex: '#1a1a1a', name: 'Hitam Lunak' },
+    { hex: '#2d2d2d', name: 'Charcoal' },
+    { hex: '#4b5563', name: 'Abu Gelap' },
+    { hex: '#6b7280', name: 'Abu Medium' },
+    { hex: '#9ca3af', name: 'Abu Terang' },
+  ]},
+  { label: 'Biru & Navy', colors: [
+    { hex: '#0f172a', name: 'Midnight' },
+    { hex: '#1e3a5f', name: 'Navy' },
+    { hex: '#1e40af', name: 'Biru Royal' },
+    { hex: '#1d4ed8', name: 'Biru Kobalt' },
+    { hex: '#2563eb', name: 'Biru Cerah' },
+    { hex: '#3b82f6', name: 'Biru Sky' },
+    { hex: '#0ea5e9', name: 'Biru Langit' },
+  ]},
+  { label: 'Hijau & Teal', colors: [
+    { hex: '#064e3b', name: 'Hijau Hutan' },
+    { hex: '#065f46', name: 'Hijau Tua' },
+    { hex: '#1a472a', name: 'Hijau Zamrud' },
+    { hex: '#166534', name: 'Hijau Gelap' },
+    { hex: '#15803d', name: 'Hijau' },
+    { hex: '#0d9488', name: 'Teal' },
+    { hex: '#0e7490', name: 'Teal Biru' },
+    { hex: '#0f766e', name: 'Teal Gelap' },
+  ]},
+  { label: 'Merah & Pink', colors: [
+    { hex: '#7f1d1d', name: 'Merah Tua' },
+    { hex: '#991b1b', name: 'Merah Gelap' },
+    { hex: '#6b2737', name: 'Merah Wine' },
+    { hex: '#be123c', name: 'Merah Rose' },
+    { hex: '#9f1239', name: 'Crimson' },
+    { hex: '#881337', name: 'Burgundy' },
+  ]},
+  { label: 'Ungu & Violet', colors: [
+    { hex: '#2e1065', name: 'Ungu Gelap' },
+    { hex: '#3b0764', name: 'Violet Tua' },
+    { hex: '#4a1d96', name: 'Ungu Tua' },
+    { hex: '#6d28d9', name: 'Ungu' },
+    { hex: '#7c3aed', name: 'Violet' },
+    { hex: '#6366f1', name: 'Indigo' },
+  ]},
+  { label: 'Coklat & Amber', colors: [
+    { hex: '#1c0a00', name: 'Coklat Hitam' },
+    { hex: '#431407', name: 'Coklat Tua' },
+    { hex: '#78350f', name: 'Coklat Kayu' },
+    { hex: '#92400e', name: 'Coklat Amber' },
+    { hex: '#b45309', name: 'Amber' },
+    { hex: '#a16207', name: 'Kuning Tua' },
+    { hex: '#8b6914', name: 'Emas' },
+  ]},
 ];
 
 /* ── STATE ── */
 const S = {
   step: 1,
   photo: null,
-  jurusan: null,
   accentColor: '#000000',
   hard: [], soft: [], lang: [],
   eduN: 0, expN: 0, certN: 0,
@@ -43,9 +72,7 @@ const S = {
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
   buildColorPicker();
-  buildJurPicker();
   addEdu(); addExp(); addCert();
-  updateProg();
   window.addEventListener('resize', rescale);
 });
 
@@ -56,7 +83,6 @@ function goStep(n) {
   S.step = n;
   document.getElementById(`step-${n}`).classList.add('active');
   document.querySelector(`.sbtn[data-step="${n}"]`).classList.add('active');
-  updateProg();
   if (n === 5) { buildPreview(); setTimeout(rescale, 80); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -66,37 +92,45 @@ function nextStep() {
   goStep(S.step + 1);
 }
 function prevStep() { if (S.step > 1) goStep(S.step - 1); }
-function updateProg() {
-  const p = (S.step / 5) * 100;
-  document.getElementById('prog-bar').style.width = p + '%';
-  document.getElementById('prog-pct').textContent = Math.round(p) + '%';
-}
+function updateProg() {}
 
 /* ── COLOR PICKER ── */
 function buildColorPicker() {
   const wrap = document.getElementById('color-presets');
-  COLOR_PRESETS.forEach(c => {
-    const sw = document.createElement('div');
-    sw.className = 'color-swatch' + (c.hex === S.accentColor ? ' active' : '');
-    sw.style.background = c.hex;
-    sw.title = c.name;
-    sw.dataset.hex = c.hex;
-    sw.addEventListener('click', () => setAccent(c.hex, sw));
-    wrap.appendChild(sw);
-  });
-  // default: first swatch active
-  if (wrap.firstChild) wrap.firstChild.classList.add('active');
+  COLOR_GROUPS.forEach(group => {
+    const grpLabel = document.createElement('div');
+    grpLabel.className = 'cp-group-label';
+    grpLabel.textContent = group.label;
+    wrap.appendChild(grpLabel);
 
-  // Custom color input
+    const row = document.createElement('div');
+    row.className = 'cp-row';
+    group.colors.forEach((c, i) => {
+      const sw = document.createElement('div');
+      sw.className = 'color-swatch' + (c.hex === S.accentColor ? ' active' : '');
+      sw.style.background = c.hex;
+      sw.title = c.name;
+      sw.dataset.hex = c.hex;
+      sw.addEventListener('click', () => setAccent(c.hex, sw));
+      row.appendChild(sw);
+    });
+    wrap.appendChild(row);
+  });
+  // first swatch active by default
+  const first = wrap.querySelector('.color-swatch');
+  if (first) first.classList.add('active');
+
   document.getElementById('color-native').addEventListener('input', e => {
     setAccent(e.target.value, null);
     document.getElementById('color-hex').value = e.target.value;
   });
   document.getElementById('color-hex').addEventListener('change', e => {
-    const v = e.target.value;
-    if (/^#[0-9a-fA-F]{6}$/.test(v)) {
-      setAccent(v, null);
-      document.getElementById('color-native').value = v;
+    const v = e.target.value.trim();
+    const full = v.startsWith('#') ? v : '#' + v;
+    if (/^#[0-9a-fA-F]{6}$/.test(full)) {
+      setAccent(full, null);
+      document.getElementById('color-native').value = full;
+      document.getElementById('color-hex').value = full;
     }
   });
 }
@@ -133,50 +167,6 @@ function handlePhoto(e) {
   };
   r.onerror = () => toast('✗ Gagal baca file', 'err');
   r.readAsDataURL(f);
-}
-
-/* ── JURUSAN PICKER ── */
-function buildJurPicker() {
-  const scroll = document.getElementById('jur-scroll');
-  scroll.innerHTML = '';
-  JURUSAN.forEach(cat => {
-    const wrap = document.createElement('div');
-    wrap.dataset.c = cat.cat;
-    const lbl = document.createElement('span');
-    lbl.className = 'jur-cat'; lbl.textContent = cat.cat;
-    wrap.appendChild(lbl);
-    const opts = document.createElement('div');
-    opts.className = 'jur-opts';
-    cat.items.forEach(val => {
-      const chip = document.createElement('div');
-      chip.className = 'jur-chip';
-      chip.dataset.v = val;
-      chip.textContent = val;
-      chip.addEventListener('click', () => selJur(chip, val));
-      opts.appendChild(chip);
-    });
-    wrap.appendChild(opts);
-    scroll.appendChild(wrap);
-  });
-}
-function selJur(chip, val) {
-  document.querySelectorAll('.jur-chip').forEach(c => c.classList.remove('sel'));
-  chip.classList.add('sel');
-  S.jurusan = val;
-  const b = document.getElementById('jur-badge');
-  b.textContent = val; b.classList.add('show');
-  b.style.cssText = `border-color:${S.accentColor}55;color:${S.accentColor};background:${S.accentColor}18;`;
-  document.getElementById('jur-inp').value = '';
-  filterJur('');
-}
-function filterJur(q) {
-  const low = q.toLowerCase(); let any = false;
-  document.querySelectorAll('#jur-scroll > div').forEach(catDiv => {
-    const chips = catDiv.querySelectorAll('.jur-chip'); let has = false;
-    chips.forEach(c => { const m = !low || c.dataset.v.toLowerCase().includes(low); c.style.display = m ? '' : 'none'; if (m) has = true; });
-    catDiv.style.display = has ? '' : 'none'; if (has) any = true;
-  });
-  document.getElementById('jur-empty').classList.toggle('show', !any);
 }
 
 /* ── DYNAMIC CARDS ── */
@@ -301,7 +291,7 @@ function collect() {
   }));
   return {
     photo: S.photo, accent: S.accentColor,
-    nama: gv('nama'), posisi: gv('posisi'), jurusan: S.jurusan,
+    nama: gv('nama'), posisi: gv('posisi'),
     ttl: gv('ttl'), email: gv('email'), phone: gv('phone'),
     alamat: gv('alamat'), linkedin: gv('linkedin'), website: gv('website'),
     ringkasan: gv('ringkasan'), edus, exps, certs,
@@ -310,147 +300,184 @@ function collect() {
   };
 }
 
-/* ── BUILD CV HTML (reference-style layout) ── */
+/* ── BUILD CV HTML — matches reference layout ── */
 function buildCV(d) {
   const ac = d.accent || '#000000';
+  // Compute a light text color for left sidebar
+  // Parse hex to determine if light or dark, then decide text color
+  const r = parseInt(ac.slice(1,3),16), g = parseInt(ac.slice(3,5),16), b = parseInt(ac.slice(5,7),16);
+  const luma = 0.299*r + 0.587*g + 0.114*b;
+  const sideText = luma > 140 ? '#1a1a1a' : '#ffffff';
+  const sideTextSub = luma > 140 ? 'rgba(0,0,0,0.65)' : 'rgba(255,255,255,0.72)';
+  const sideDivider = luma > 140 ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.2)';
+
   const name = d.nama || 'NAMA LENGKAP';
-  const role = d.posisi || (d.jurusan || 'POSISI / JABATAN');
+  const role = d.posisi || 'Posisi / Jabatan';
 
-  // Photo
+  // Photo — circle with white border
   const photoHTML = d.photo
-    ? `<div class="cv-photo-circle"><img src="${d.photo}" alt="foto" crossorigin="anonymous"/></div>`
-    : `<div class="cv-photo-ph">👤</div>`;
+    ? `<div class="cv-photo-wrap"><img src="${d.photo}" alt="foto" crossorigin="anonymous"/></div>`
+    : `<div class="cv-photo-wrap cv-photo-ph"><span>👤</span></div>`;
 
-  // Contacts with icon circles
-  const contactIcons = { email:'✉', phone:'📞', alamat:'📍', linkedin:'in', website:'🌐' };
+  // LEFT SIDEBAR: Kontak
   const contacts = [
-    d.phone    && { icon:'☎', text: d.phone },
-    d.website  && { icon:'⊕', text: d.website },
-    d.email    && { icon:'✉', text: d.email },
-    d.alamat   && { icon:'⌂', text: d.alamat },
-    d.linkedin && { icon:'in', text: d.linkedin },
-    d.ttl      && { icon:'♦', text: d.ttl },
+    d.phone    && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>`, text: d.phone },
+    d.email    && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>`, text: d.email },
+    d.alamat   && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`, text: d.alamat },
+    d.linkedin && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>`, text: d.linkedin },
+    d.website  && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95a15.65 15.65 0 00-1.38-3.56A8.03 8.03 0 0118.92 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2s.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.987 7.987 0 015.08 16zm2.95-8H5.08a7.987 7.987 0 014.33-3.56A15.65 15.65 0 008.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2s.07-1.35.16-2h4.68c.09.65.16 1.32.16 2s-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 01-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2s-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>`, text: d.website },
+    d.ttl      && { svg: `<svg width="11" height="11" viewBox="0 0 24 24" fill="${sideText}"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm2-7h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11z"/></svg>`, text: d.ttl },
   ].filter(Boolean);
 
   const contactHTML = contacts.map(c => `
-    <div class="cv-contact-item">
-      <div class="cv-contact-icon">${c.icon}</div>
-      <span>${c.text}</span>
+    <div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:7px">
+      <span style="flex-shrink:0;margin-top:1px;opacity:0.85">${c.svg}</span>
+      <span style="font-size:9.5px;color:${sideTextSub};line-height:1.45;word-break:break-all">${c.text}</span>
     </div>`).join('');
 
   // Education
   const eduHTML = d.edus.filter(e=>e.inst).map(e => `
-    <div class="cv-edu-item">
-      <div class="cv-edu-inst">${e.inst}${(e.s||e.e) ? ` <span class="cv-edu-year">| ${[e.s,e.e].filter(Boolean).join('–')}</span>` : ''}</div>
-      ${(e.jur||e.gel) ? `<div class="cv-edu-prog">${[e.jur,e.gel].filter(Boolean).join(', ')}</div>` : ''}
-      ${e.ipk ? `<div class="cv-edu-prog">IPK: ${e.ipk}</div>` : ''}
-    </div>`).join('') || '<div style="font-size:10px;color:#aaa;font-style:italic">Belum diisi</div>';
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;font-weight:700;color:${sideText};line-height:1.3">${e.inst}</div>
+      ${(e.jur||e.gel) ? `<div style="font-size:9.5px;color:${sideTextSub};margin-top:2px">${[e.jur,e.gel].filter(Boolean).join(' · ')}</div>` : ''}
+      ${(e.s||e.e) ? `<div style="font-size:9px;color:${sideTextSub};margin-top:1px">${[e.s,e.e].filter(Boolean).join(' – ')}</div>` : ''}
+      ${e.ipk ? `<div style="font-size:9px;color:${sideTextSub}">IPK: ${e.ipk}</div>` : ''}
+    </div>`).join('') || `<div style="font-size:9.5px;color:${sideTextSub};font-style:italic">Belum diisi</div>`;
 
-  // Skills (left column — semua skill jadi bullet list)
-  const allSkillsLeft = [...d.hard, ...d.soft];
-  const skillsHTML = allSkillsLeft.length
-    ? allSkillsLeft.map(s => `<div class="cv-skill-item">${s}</div>`).join('')
-    : '<div style="font-size:10px;color:#aaa;font-style:italic">Belum diisi</div>';
-
-  // Experience
-  const expHTML = d.exps.filter(e=>e.co).map(e => {
-    const period = [e.s, e.e].filter(Boolean).join(' – ');
-    const meta   = [e.co, e.type, e.loc].filter(Boolean).join(' · ');
-    // Parse desc as bullet points
-    let descHTML = '';
-    if (e.desc) {
-      const lines = e.desc.split('\n').map(l => l.trim()).filter(Boolean);
-      const bullets = lines.map(l => l.replace(/^[-•·]\s*/, ''));
-      descHTML = `<div class="cv-exp-desc"><ul>${bullets.map(b=>`<li>${b}</li>`).join('')}</ul></div>`;
-    }
-    return `
-      <div class="cv-exp-item">
-        <div class="cv-exp-header">
-          <div class="cv-exp-title">${e.pos} – ${meta}${period ? ` (${period})` : ''}</div>
-        </div>
-        ${descHTML}
-      </div>`;
-  }).join('') || '<div style="font-size:10px;color:#aaa;font-style:italic">Belum diisi</div>';
-
-  // Certs / Kursus
-  const certHTML = d.certs.filter(c=>c.nama).map(c => `
-    <div class="cv-cert-item">
-      <span>${c.nama}${c.iss||c.yr ? ` <span class="cv-cert-sub">– ${[c.iss,c.yr].filter(Boolean).join(', ')}</span>` : ''}</span>
-    </div>`).join('');
+  // Skills
+  const allSkills = [...d.hard, ...d.soft];
+  const skillsHTML = allSkills.length
+    ? allSkills.map(s => `
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+        <span style="width:5px;height:5px;border-radius:50%;background:${sideText};flex-shrink:0;opacity:0.7"></span>
+        <span style="font-size:9.5px;color:${sideTextSub}">${s}</span>
+      </div>`).join('')
+    : `<div style="font-size:9.5px;color:${sideTextSub};font-style:italic">Belum diisi</div>`;
 
   // Lang
   const langHTML = d.lang.length
-    ? d.lang.map(l=>`<span class="cv-lang-chip">${l}</span>`).join('')
+    ? d.lang.map(l=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px"><span style="width:5px;height:5px;border-radius:50%;background:${sideText};flex-shrink:0;opacity:0.7"></span><span style="font-size:9.5px;color:${sideTextSub}">${l}</span></div>`).join('')
     : '';
 
-  return `
-  <div class="cv-wrap" style="--cv-accent:${ac}">
-    <!-- TOP -->
-    <div class="cv-top">
-      <div class="cv-top-left">
-        <div class="cv-big-name">${name}</div>
-        <div class="cv-job-title">${role.toUpperCase()}</div>
+  // LEFT SIDEBAR section header
+  const sideSecTitle = (t) => `
+    <div style="font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+                color:${sideText};padding-bottom:5px;margin-bottom:10px;
+                border-bottom:1px solid ${sideDivider}">${t}</div>`;
+
+  // RIGHT MAIN: Experience
+  const expHTML = d.exps.filter(e=>e.co).map(e => {
+    const period = [e.s, e.e].filter(Boolean).join(' – ');
+    const subline = [e.co, e.type, e.loc].filter(Boolean).join(' · ');
+    let bullets = '';
+    if (e.desc) {
+      const lines = e.desc.split('\n').map(l=>l.trim().replace(/^[-•·]\s*/,'')).filter(Boolean);
+      bullets = `<ul style="padding-left:0;list-style:none;margin-top:5px">${
+        lines.map(b=>`<li style="padding-left:13px;position:relative;margin-bottom:3px;font-size:10.5px;color:#444;line-height:1.55">
+          <span style="position:absolute;left:0;color:${ac};font-size:12px;line-height:1.2">•</span>${b}</li>`).join('')
+      }</ul>`;
+    }
+    return `
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <div style="font-size:11.5px;font-weight:700;color:#111">${e.pos}</div>
+          ${period ? `<div style="font-size:9.5px;color:#999;white-space:nowrap;font-style:italic">${period}</div>` : ''}
+        </div>
+        ${subline ? `<div style="font-size:10px;color:${ac};font-weight:600;margin-top:1px">${subline}</div>` : ''}
+        ${bullets}
+      </div>`;
+  }).join('') || '<div style="font-size:10px;color:#aaa;font-style:italic">Belum diisi</div>';
+
+  // Certs
+  const certHTML = d.certs.filter(c=>c.nama).map(c => `
+    <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:7px">
+      <span style="width:5px;height:5px;border-radius:50%;background:${ac};flex-shrink:0;margin-top:5px"></span>
+      <div>
+        <div style="font-size:10.5px;font-weight:600;color:#222">${c.nama}</div>
+        ${(c.iss||c.yr)?`<div style="font-size:9.5px;color:#888">${[c.iss,c.yr].filter(Boolean).join(' · ')}</div>`:''}
       </div>
-      <div class="cv-top-right">${photoHTML}</div>
+    </div>`).join('');
+
+  // RIGHT section header
+  const mainSecTitle = (t) => `
+    <div style="font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+                color:#1a1a1a;padding-bottom:5px;margin-bottom:12px;
+                border-bottom:2px solid ${ac}">${t}</div>`;
+
+  return `
+  <div style="width:794px;min-height:1123px;background:#fff;font-family:'Inter',sans-serif;font-size:12px;line-height:1.55;color:#1a1a1a;display:flex;flex-direction:column">
+
+    <!-- ── HEADER ── -->
+    <div style="display:flex;align-items:flex-end;padding:36px 36px 0 0">
+      <!-- Left sidebar top: photo + name block -->
+      <div style="width:218px;flex-shrink:0;background:${ac};padding:30px 22px 22px;display:flex;flex-direction:column;align-items:center;gap:14px">
+        ${d.photo
+          ? `<div style="width:100px;height:100px;border-radius:50%;overflow:hidden;border:3px solid ${luma>140?'rgba(0,0,0,0.2)':'rgba(255,255,255,0.4)'}">
+               <img src="${d.photo}" style="width:100%;height:100%;object-fit:cover;display:block" crossorigin="anonymous"/>
+             </div>`
+          : `<div style="width:100px;height:100px;border-radius:50%;background:${luma>140?'rgba(0,0,0,0.1)':'rgba(255,255,255,0.15)'};border:3px solid ${luma>140?'rgba(0,0,0,0.2)':'rgba(255,255,255,0.3)'};display:flex;align-items:center;justify-content:center;font-size:36px">👤</div>`
+        }
+      </div>
+      <!-- Right header: big name -->
+      <div style="flex:1;padding:0 0 22px 30px">
+        <div style="font-size:44px;font-weight:800;color:#0a0a0a;letter-spacing:-1.5px;line-height:1.0;text-transform:uppercase;word-break:break-word">${name}</div>
+        <div style="font-size:10.5px;font-weight:600;color:#666;letter-spacing:3px;text-transform:uppercase;margin-top:8px">${role}</div>
+      </div>
     </div>
 
-    <!-- DIVIDER -->
-    <div class="cv-divider"></div>
+    <!-- ── ACCENT BAR ── -->
+    <div style="height:3px;background:${ac};margin-left:218px"></div>
 
-    <!-- SUMMARY -->
-    ${d.ringkasan ? `
-    <div class="cv-summary-wrap">
-      <div class="cv-summary-title">Profil</div>
-      <div class="cv-summary-text">${d.ringkasan}</div>
-    </div>` : ''}
+    <!-- ── BODY ── -->
+    <div style="display:flex;flex:1">
 
-    <!-- BODY -->
-    <div class="cv-body">
-      <!-- LEFT COLUMN -->
-      <div class="cv-left">
+      <!-- LEFT SIDEBAR -->
+      <div style="width:218px;flex-shrink:0;background:${ac};padding:22px;display:flex;flex-direction:column;gap:18px">
 
-        ${contactHTML ? `
-        <div class="cv-sec">
-          <div class="cv-sec-title">Kontak</div>
+        ${contactHTML ? `<div>
+          ${sideSecTitle('Kontak')}
           ${contactHTML}
         </div>` : ''}
 
-        <div class="cv-sec">
-          <div class="cv-sec-title">Pendidikan</div>
+        <div>
+          ${sideSecTitle('Pendidikan')}
           ${eduHTML}
         </div>
 
-        ${allSkillsLeft.length ? `
-        <div class="cv-sec">
-          <div class="cv-sec-title">Kemampuan</div>
+        ${allSkills.length ? `<div>
+          ${sideSecTitle('Kemampuan')}
           ${skillsHTML}
         </div>` : ''}
 
-        ${langHTML ? `
-        <div class="cv-sec">
-          <div class="cv-sec-title">Bahasa</div>
+        ${langHTML ? `<div>
+          ${sideSecTitle('Bahasa')}
           ${langHTML}
         </div>` : ''}
 
-        ${d.hobi ? `
-        <div class="cv-sec">
-          <div class="cv-sec-title">Hobi</div>
-          <div style="font-size:10.5px;color:#444;line-height:1.6">${d.hobi}</div>
+        ${d.hobi ? `<div>
+          ${sideSecTitle('Hobi')}
+          <div style="font-size:9.5px;color:${sideTextSub};line-height:1.6">${d.hobi}</div>
         </div>` : ''}
 
       </div>
 
-      <!-- RIGHT COLUMN -->
-      <div class="cv-right">
+      <!-- RIGHT MAIN -->
+      <div style="flex:1;padding:26px 30px;display:flex;flex-direction:column;gap:0">
 
-        <div class="cv-sec">
-          <div class="cv-sec-title">Pengalaman</div>
+        ${d.ringkasan ? `
+        <div style="margin-bottom:20px">
+          ${mainSecTitle('Profil')}
+          <div style="font-size:10.5px;color:#444;line-height:1.75;text-align:justify">${d.ringkasan}</div>
+        </div>` : ''}
+
+        <div style="margin-bottom:20px">
+          ${mainSecTitle('Pengalaman')}
           ${expHTML}
         </div>
 
         ${certHTML ? `
-        <div class="cv-sec">
-          <div class="cv-sec-title">Kursus & Sertifikat</div>
+        <div>
+          ${mainSecTitle('Kursus & Sertifikat')}
           ${certHTML}
         </div>` : ''}
 

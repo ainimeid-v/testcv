@@ -14,53 +14,6 @@
 <body>
 <div class="app">
 
-  <!-- ══════════ SIDEBAR ══════════ -->
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-mark">📄</div>
-      <div>
-        <div class="logo-name">CV Generator</div>
-        <div class="logo-sub">v3 · free · no api key</div>
-      </div>
-    </div>
-
-    <div>
-      <p class="nlbl">Langkah</p>
-      <nav class="steps">
-        <button class="sbtn active" data-step="1" onclick="goStep(1)">
-          <span class="sn">1</span>
-          <span class="si"><span class="st">Identitas</span><span class="sd">Foto & info pribadi</span></span>
-          <span class="sc">✓</span>
-        </button>
-        <button class="sbtn" data-step="2" onclick="goStep(2)">
-          <span class="sn">2</span>
-          <span class="si"><span class="st">Pendidikan</span><span class="sd">Sekolah & kampus</span></span>
-          <span class="sc">✓</span>
-        </button>
-        <button class="sbtn" data-step="3" onclick="goStep(3)">
-          <span class="sn">3</span>
-          <span class="si"><span class="st">Pengalaman</span><span class="sd">Kerja, magang, organisasi</span></span>
-          <span class="sc">✓</span>
-        </button>
-        <button class="sbtn" data-step="4" onclick="goStep(4)">
-          <span class="sn">4</span>
-          <span class="si"><span class="st">Skills & Sertifikat</span><span class="sd">Kemampuan & lisensi</span></span>
-          <span class="sc">✓</span>
-        </button>
-        <button class="sbtn" data-step="5" onclick="goStep(5)">
-          <span class="sn">5</span>
-          <span class="si"><span class="st">Preview & Unduh</span><span class="sd">Cek & download PDF</span></span>
-          <span class="sc">✓</span>
-        </button>
-      </nav>
-    </div>
-
-    <div class="prog-wrap">
-      <div class="prog-meta"><span>Progress</span><span id="prog-pct">20%</span></div>
-      <div class="prog-track"><div class="prog-bar" id="prog-bar"></div></div>
-    </div>
-  </aside>
-
   <!-- ══════════ MAIN ══════════ -->
   <main class="main">
 
@@ -98,20 +51,6 @@
           <input type="color" id="color-native" value="#000000" title="Pilih warna bebas"/>
           <input class="color-hex-input" id="color-hex" value="#000000" placeholder="#000000" maxlength="7"/>
           <span id="accent-preview-dot" style="width:28px;height:28px;border-radius:50%;background:#000;flex-shrink:0;border:2px solid rgba(255,255,255,.15)"></span>
-        </div>
-      </div>
-
-      <!-- Jurusan / Bidang -->
-      <div class="fg" style="margin-bottom:22px">
-        <label class="flbl">Jurusan / Bidang (opsional — untuk info di CV)</label>
-        <div class="jur-wrap">
-          <div class="jur-search">
-            <span class="jur-si">🔍</span>
-            <input class="jur-inp" id="jur-inp" placeholder="Cari jurusan... (cth: Akuntansi, Teknik Sipil)" oninput="filterJur(this.value)" autocomplete="off"/>
-            <span class="jur-badge" id="jur-badge"></span>
-          </div>
-          <div class="jur-scroll" id="jur-scroll"></div>
-          <div class="jur-empty" id="jur-empty">Jurusan tidak ditemukan 🤔</div>
         </div>
       </div>
 
